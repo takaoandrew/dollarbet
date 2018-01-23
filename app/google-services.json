@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1041829635688",
+    "firebase_url": "https://dollarbet-d82b3.firebaseio.com",
+    "project_id": "dollarbet-d82b3",
+    "storage_bucket": "dollarbet-d82b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041829635688:android:581d31f5fc5bca1d",
+        "android_client_info": {
+          "package_name": "com.example.android.firebaseuserandmessageapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1041829635688-0gts01s8lljea79en2v0tau39vpvjd79.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.firebaseuserandmessageapplication",
+            "certificate_hash": "5c5725d0f3b3aea8791fe2c6175d9aefb2cce871"
+          }
+        },
+        {
+          "client_id": "1041829635688-acuo08lh8d9n187gd2klloj4pr85itrl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApuqX5TGevNYZuPo6K69ZQczaxe17k4EQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1041829635688-acuo08lh8d9n187gd2klloj4pr85itrl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
