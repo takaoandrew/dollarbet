@@ -27,6 +27,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             Log.d(TAG, "Message Notification Title: " + remoteMessage.getNotification().getTitle());
+            Intent intent = new Intent();
+            intent.putExtra(Intent.EXTRA_TEXT, remoteMessage.getNotification().getTitle());
+            intent.putExtra("from_extra", remoteMessage.getNotification().getBody());
+            intent.setAction("com.example.android.firebaseuserandmessageapp.onMessageReceivedGETRIDOFTHIS");
+            sendBroadcast(intent);
         }
     }
 }

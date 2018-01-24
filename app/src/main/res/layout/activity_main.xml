@@ -5,20 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.firebaseuserandmessageapplication.MainActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
     <Button
         android:id="@+id/send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send mesage"
+        android:text="Send message"
         android:onClick="sendMessage"
         />
     <Button
@@ -28,5 +19,21 @@
         android:text="Sign out"
         android:onClick="signOut"
         />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/current_user"
+        android:text="Current user appears here"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/send_message" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/received_message"
+        android:text="Message will appear hear"
+        app:layout_constraintTop_toBottomOf="@+id/current_user"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

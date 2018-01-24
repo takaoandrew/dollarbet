@@ -8,13 +8,14 @@ import java.util.ArrayList;
 
 public class User {
     public String userId;
-//    public String userName;
+    public String userName;
     public String fullName;
     public ArrayList<String> friends;
 
-    public User(String tempUserId, String tempFullName) {
+    public User(String tempUserId, String tempFullName, String tempUserName) {
         userId = tempUserId;
         fullName = tempFullName;
+        userName = tempUserName;
         friends = new ArrayList<>();
     }
 
@@ -27,10 +28,10 @@ public class User {
 //        friends = new ArrayList<>();
 //    }
 
-    public User(String tempUserId, String tempFullName, ArrayList<String> tempFriends) {
+    public User(String tempUserId, String tempFullName, String tempUserName, ArrayList<String> tempFriends) {
         userId = tempUserId;
-//        userName = tempUserName;
         fullName = tempFullName;
+        userName = tempUserName;
         friends = tempFriends;
     }
 

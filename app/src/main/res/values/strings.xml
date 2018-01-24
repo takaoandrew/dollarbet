@@ -4,4 +4,11 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb203712970073004</string>
     <string name="new_username_prompt">Create a new username</string>
     <string name="new_username_hint">username</string>
+    <string name="username_long">Please limit the username to 15 characters</string>
+    <string name="username_bad_characters">Please pick a username without spaces</string>
+    <string name="username_taken">That username has been taken</string>
+    <string name="username_empty">Username can\'t be empty</string>
+    <string name="recipient_hint">username</string>
+    <string name="recipient_prompt">Pick a username to send to</string>
+    <string name="recipient_inexistent">This username does not exist</string>
 </resources>
