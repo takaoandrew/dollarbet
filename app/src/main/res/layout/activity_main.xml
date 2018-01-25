@@ -5,6 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.firebaseuserandmessageapplication.MainActivity">
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="Message Tester">
+
+    </android.support.v7.widget.Toolbar>
     <Button
         android:id="@+id/send_message"
         android:layout_width="wrap_content"
@@ -13,11 +19,19 @@
         android:onClick="sendMessage"
         />
     <Button
+        android:id="@+id/sign_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/send_message"
         android:text="Sign out"
         android:onClick="signOut"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/sign_out"
+        android:text="View requests"
+        android:onClick="viewRequests"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -33,6 +47,14 @@
         android:id="@+id/received_message"
         android:text="Message will appear hear"
         app:layout_constraintTop_toBottomOf="@+id/current_user"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/requests"
+        android:text="Requests will appear hear"
+        app:layout_constraintTop_toBottomOf="@+id/received_message"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
