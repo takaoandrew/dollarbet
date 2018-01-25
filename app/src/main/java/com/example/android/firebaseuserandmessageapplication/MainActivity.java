@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> existingUsers;
     private HashMap<String, String> idFromUsers;
     private HashMap<String, String> userFromIDs;
+    private HashMap<String, String> nameFromIDs;
     private HashMap<String, String> currentRequests;
     private static TextView receivedMessageView;
     private static TextView currentUserView;
@@ -59,17 +66,25 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser user;
     private MyBroadcastReceiver receiver;
 
+    private RecyclerView requestsRecyclerView;
+    private RequestsAdapter requestsAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "OnCreate");
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         //Get user and see if logged in or not
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance();
         receivedMessageView = findViewById(R.id.received_message);
         currentUserView = findViewById(R.id.current_user);
+
+        requestsRecyclerView = findViewById(R.id.rv_requests);
 
         if (user != null) {
 //            String userId = user.getUid();
@@ -92,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             .build(),
                     RC_SIGN_IN);
         }
+        requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         //Values style, changed to child style
 //        usersRef.addValueEventListener(new ValueEventListener() {
@@ -119,6 +135,23 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==R.id.action_requests) {
+            Intent aboutIntent = new Intent(this, FriendRequestsActivity.class);
+            startActivity(aboutIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
     public void getRequests() {
 
         currentRequests = new HashMap<String, String>();
@@ -133,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "request added");
                     currentRequests.put((String) dataSnapshot.child("from").getValue(),
                             (String) dataSnapshot.child("message").getValue());
+                    updateAdapter();
+
                 }
 
                 @Override
@@ -160,12 +195,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void updateAdapter() {
+        requestsAdapter = new RequestsAdapter(this, currentRequests);
+        requestsRecyclerView.setAdapter(requestsAdapter);
+    }
+
     public void getUsers() {
 
         //This should update local data every time a user's data changes in the firebase database
         existingUsers = new ArrayList<>();
         idFromUsers = new HashMap<String, String>();
         userFromIDs = new HashMap<String, String>();
+        nameFromIDs = new HashMap<String, String>();
         usersRef = database.getReference("users");
         usersRef.addChildEventListener(new ChildEventListener() {
             @Override
@@ -175,6 +216,8 @@ public class MainActivity extends AppCompatActivity {
                 existingUsers.add(dataSnapshot.getKey());
                 userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
                         (String) dataSnapshot.child("userName").getValue());
+                nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
+                        (String) dataSnapshot.child("fullName").getValue());
                 Log.d(TAG, "user added");
                 Log.d(TAG, "datasnapshot userId, user.getUid = " + dataSnapshot.child("userId").getValue() + " and " + user.getUid());
                 //Only get requests once the current user has been added to the hash maps
@@ -189,6 +232,8 @@ public class MainActivity extends AppCompatActivity {
                         (String) dataSnapshot.child("userId").getValue());
                 userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
                         (String) dataSnapshot.child("userName").getValue());
+                nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
+                        (String) dataSnapshot.child("fullName").getValue());
                 Log.d(TAG, "child added");
             }
 
@@ -196,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 idFromUsers.remove((String) dataSnapshot.child("userName").getValue());
                 userFromIDs.remove((String) dataSnapshot.child("userId").getValue());
+                nameFromIDs.remove((String) dataSnapshot.child("userId").getValue());
                 existingUsers.remove(dataSnapshot.getKey());
             }
 
@@ -320,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                         //Version 1
 //                        sendNotificationToUser(userFromIDs.get(user.getUid()), userId, "Hello from one user to another!");
                         //Version 2
-                        sendNotificationToUser(userFromIDs.get(user.getUid()), userFromIDs.get(userId), "Hello from one user to another!");
+                        sendNotificationToUser(userFromIDs.get(user.getUid()), userFromIDs.get(userId), nameFromIDs.get(user.getUid()));
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -483,4 +529,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }

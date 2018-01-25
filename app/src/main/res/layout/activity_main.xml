@@ -6,15 +6,18 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.firebaseuserandmessageapplication.MainActivity">
     <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        app:titleTextColor="@android:color/white"
+        android:background="@color/colorPrimary"
         app:title="Message Tester">
-
     </android.support.v7.widget.Toolbar>
     <Button
         android:id="@+id/send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:text="Send message"
         android:onClick="sendMessage"
         />
@@ -23,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/send_message"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:text="Sign out"
         android:onClick="signOut"
         />
@@ -30,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/sign_out"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:text="View requests"
         android:onClick="viewRequests"
         />
@@ -57,5 +62,11 @@
         app:layout_constraintTop_toBottomOf="@+id/received_message"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+    <android.support.v7.widget.RecyclerView
+        app:layout_constraintTop_toBottomOf="@id/requests"
+        android:id="@+id/rv_requests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+    </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>
