@@ -12,4 +12,10 @@
     <string name="recipient_prompt">Pick a username to send to</string>
     <string name="recipient_inexistent">This username does not exist</string>
     <string name="action_friends">friends</string>
+    <string name="close">close</string>
+    <string name="accept">Accept</string>
+    <string name="deny">Deny</string>
+    <string name="recipient_already_requested">Request pending</string>
+    <string name="recipient_is_current_user">cannot choose your own username</string>
+    <string name="recipient_requested_sender">this username has added you</string>
 </resources>

@@ -13,13 +13,18 @@
         android:background="@color/colorPrimary"
         app:title="Message Tester">
     </android.support.v7.widget.Toolbar>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.constraint.ConstraintLayout>
     <Button
         android:id="@+id/send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:text="Send message"
-        android:onClick="sendMessage"
+        android:text="Send Request"
+        android:onClick="sendRequest"
         />
     <Button
         android:id="@+id/sign_out"
@@ -35,9 +40,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/sign_out"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:text="View requests"
-        android:onClick="viewRequests"
+        android:text="Send Message"
         />
+    <!--TODO add send message functionality-->
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,10 +69,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
     <android.support.v7.widget.RecyclerView
-        app:layout_constraintTop_toBottomOf="@id/requests"
+        android:translationZ="2dp"
         android:id="@+id/rv_requests"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
     </android.support.v7.widget.RecyclerView>
+    <Button
+        android:translationZ="3dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/close_friends"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="invisible"
+        android:text="@string/close"
+        android:onClick="closeFriends"/>
 </android.support.constraint.ConstraintLayout>

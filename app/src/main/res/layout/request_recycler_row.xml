@@ -2,6 +2,7 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@color/cardview_light_background"
     android:padding="20dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
@@ -12,5 +13,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/subText"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/acceptFriend"
+        android:text="@string/accept"
+        android:onClick="acceptFriend"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/denyFriend"
+        android:text="@string/deny"
+        android:onClick="denyFriend"
+        />
 
 </LinearLayout>
