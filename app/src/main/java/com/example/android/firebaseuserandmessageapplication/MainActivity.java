@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -371,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
     public void getFriends() {
         Log.d(TAG, "getFriends");
         if (username != null) {
+            Log.d(TAG, "getFriends: username = " + username);
             friendsRef = database.getReference("users/" + username + "/friends");
             friendsRef.addChildEventListener(friendsRefListener);
         }
@@ -494,6 +496,12 @@ public class MainActivity extends AppCompatActivity {
         incomingRequestsRef.removeEventListener(incomingRequestsRefListener);
         outgoingRequestsRef.removeEventListener(outgoingRequestsRefListener);
         usersRef.removeEventListener(usersRefListener);
+
+        //New data
+        currentFriends = new HashMap<>();
+        currentOutgoingRequests = new HashMap<>();
+        currentIncomingRequests = new HashMap<>();
+
 //        receiverUnregistration();
         FirebaseAuth.getInstance().signOut();
         Intent intent = getIntent();
@@ -602,7 +610,9 @@ public class MainActivity extends AppCompatActivity {
                         dialogInterface.cancel();
                     }
                 });
+
         final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show();
 
         Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
