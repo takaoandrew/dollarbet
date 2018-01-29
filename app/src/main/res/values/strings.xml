@@ -21,4 +21,7 @@
     <string name="recipient_already_friends">you are already friends with</string>
     <string name="recipient_not_friend">Please choose a friends username</string>
     <string name="recipient_valid">Send to</string>
+    <string name="message_prompt">Enter your message here</string>
+    <string name="message_hint">message</string>
+    <string name="message_empty">You must include a message</string>
 </resources>

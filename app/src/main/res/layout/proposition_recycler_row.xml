@@ -16,13 +16,13 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/acceptFriend"
+        android:id="@+id/acceptProposition"
         android:text="@string/accept"
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/denyFriend"
+        android:id="@+id/denyProposition"
         android:text="@string/deny"
         />
 

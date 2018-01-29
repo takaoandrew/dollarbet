@@ -72,6 +72,13 @@
         app:layout_constraintRight_toRightOf="parent" />
     <android.support.v7.widget.RecyclerView
         android:translationZ="2dp"
+        android:id="@+id/rv_messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/requests">
+    </android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.RecyclerView
+        android:translationZ="2dp"
         android:id="@+id/rv_requests"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
