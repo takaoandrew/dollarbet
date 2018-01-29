@@ -19,7 +19,7 @@
 
     </android.support.constraint.ConstraintLayout>
     <Button
-        android:id="@+id/send_message"
+        android:id="@+id/send_request"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
@@ -30,17 +30,19 @@
         android:id="@+id/sign_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/send_message"
+        app:layout_constraintStart_toEndOf="@id/send_request"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:text="Sign out"
         android:onClick="signOut"
         />
     <Button
+        android:id="@+id/send_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@id/sign_out"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         android:text="Send Message"
+        android:onClick="sendMessage"
         />
     <!--TODO add send message functionality-->
 
