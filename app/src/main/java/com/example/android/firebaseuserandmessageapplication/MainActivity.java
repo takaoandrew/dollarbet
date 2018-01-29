@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private MyBroadcastReceiver receiver;
     private Button closeButton;
     public static String username;
+    public static String userId;
     ChildEventListener friendsRefListener;
     ChildEventListener outgoingRequestsRefListener;
     ChildEventListener incomingRequestsRefListener;
@@ -78,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Set a default, since the app will crash otherwise?
+        username = "aaa";
+
         Log.d(TAG, "OnCreate");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                             .build(),
                     RC_SIGN_IN);
         }
+
         requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         friendsRefListener = new ChildEventListener() {
@@ -305,6 +311,77 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+//        usersRef = database.getReference("users");
+//
+//        usersRef.addChildEventListener( new ChildEventListener() {
+//                                            @Override
+//                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                                                Log.d(TAG, "getUsers: onChildAdded-- existingUsers was " + existingUsers.toString());
+//                                                idFromUsers.put((String) dataSnapshot.child("userName").getValue(),
+//                                                        (String) dataSnapshot.child("userId").getValue());
+//                                                existingUsers.add(dataSnapshot.getKey());
+//                                                userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
+//                                                        (String) dataSnapshot.child("userName").getValue());
+//                                                nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
+//                                                        (String) dataSnapshot.child("fullName").getValue());
+//                                                Log.d(TAG, "getUsers: onChildAdded-- existingUsers now " + existingUsers.toString());
+//                                                //Only get requests once the current user has been added to the hash maps
+//                                                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
+//                                                    Log.d(TAG, "getUsers: onChildAdded-- currentUser added");
+//                                                    username = currentUserName();
+//                                                    getIncomingRequests();
+//                                                    getOutgoingRequests();
+//                                                    getFriends();
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//                                                Log.d(TAG, "getUsers: onChildChanged-- existingUsers was " + existingUsers.toString());
+//                                                idFromUsers.put((String) dataSnapshot.child("userName").getValue(),
+//                                                        (String) dataSnapshot.child("userId").getValue());
+//                                                userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
+//                                                        (String) dataSnapshot.child("userName").getValue());
+//                                                nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
+//                                                        (String) dataSnapshot.child("fullName").getValue());
+//                                                Log.d(TAG, "getUsers: onChildChanged-- existingUsers now " + existingUsers.toString());
+//                                                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
+//                                                    Log.d(TAG, "getUsers: onChildChanged-- currentUser changed");
+//                                                    username = currentUserName();
+//                                                    getIncomingRequests();
+//                                                    getOutgoingRequests();
+//                                                    getFriends();
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                                                Log.d(TAG, "getUsers: onChildRemoved-- existingUsers was " + existingUsers.toString());
+//                                                idFromUsers.remove((String) dataSnapshot.child("userName").getValue());
+//                                                userFromIDs.remove((String) dataSnapshot.child("userId").getValue());
+//                                                nameFromIDs.remove((String) dataSnapshot.child("userId").getValue());
+//                                                existingUsers.remove(dataSnapshot.getKey());
+//                                                Log.d(TAG, "getUsers: onChildRemoved-- existingUsers now " + existingUsers.toString());
+//                                                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
+//                                                    Log.d(TAG, "getUsers: onChildRemoved-- currentUser removed");
+//                                                    username = currentUserName();
+//                                                    getIncomingRequests();
+//                                                    getOutgoingRequests();
+//                                                    getFriends();
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(DatabaseError databaseError) {
+//
+//                                            }
+//                                        });
+
         //Values style, changed to child style
 //        usersRef.addValueEventListener(new ValueEventListener() {
 //            @Override
@@ -336,11 +413,15 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         if (user != null) {
             Log.d(TAG, "onResume: Logged in: Current user: " + user.getDisplayName());
+            userId = user.getUid();
             currentFriends = new HashMap<>();
             currentOutgoingRequests = new HashMap<>();
             currentIncomingRequests = new HashMap<>();
             currentUserView.setText("Welcome, " + user.getDisplayName());
             getUsers();
+            getIncomingRequests();
+            getOutgoingRequests();
+            getFriends();
             String userId = user.getUid();
             FirebaseMessaging.getInstance().subscribeToTopic("user_"+userId);
         }
@@ -381,6 +462,7 @@ public class MainActivity extends AppCompatActivity {
     public void getFriends() {
         Log.d(TAG, "getFriends");
         if (username != null) {
+            Log.d(TAG, "getFriends: username = " + username);
             friendsRef = database.getReference("users/" + username + "/friends");
             friendsRef.addChildEventListener(friendsRefListener);
         }
@@ -399,6 +481,7 @@ public class MainActivity extends AppCompatActivity {
     public void getIncomingRequests() {
         Log.d(TAG, "getIncomingRequests");
         if (username != null) {
+            Log.d(TAG, "username != null");
             incomingRequestsRef = database.getReference("users/" + username + "/incomingRequests");
             incomingRequestsRef.addChildEventListener(incomingRequestsRefListener);
         }
@@ -501,8 +584,17 @@ public class MainActivity extends AppCompatActivity {
     public void signOut(View view) {
         //must unsubscribe on sign out
         FirebaseMessaging.getInstance().unsubscribeFromTopic("user_"+user.getUid());
-
         removeUserSpecificListeners();
+//        friendsRef.removeEventListener(friendsRefListener);
+//        incomingRequestsRef.removeEventListener(incomingRequestsRefListener);
+//        outgoingRequestsRef.removeEventListener(outgoingRequestsRefListener);
+//        usersRef.removeEventListener(usersRefListener);
+
+        //New data
+        currentFriends = new HashMap<>();
+        currentOutgoingRequests = new HashMap<>();
+        currentIncomingRequests = new HashMap<>();
+
 //        receiverUnregistration();
         FirebaseAuth.getInstance().signOut();
         Intent intent = getIntent();
@@ -511,76 +603,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Only send to friends confirmed
-//    public void sendMessage(View view) {
-//        Context context = view.getContext();
-//        LayoutInflater layoutInflater = LayoutInflater.from(context);
-//        View dialogView = layoutInflater.inflate(R.layout.send_to_username_dialog, null);
-//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-//        alertDialogBuilder.setView(dialogView);
-//        final EditText recipient = (EditText) dialogView.findViewById(R.id.et_recipient);
-//        final TextView recipientPromptTextView = (TextView) dialogView.findViewById(R.id.tv_send_to_username_prompt);
-//
-//        alertDialogBuilder
-//                .setCancelable(false)
-//                .setPositiveButton("Send", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        String username = recipient.getText().toString();
-//                        String userId = idFromUsers.get(username);
-//                        Log.d(TAG, "Id of this user is " + idFromUsers.get(username));
-//                        //Version 1
-////                        sendNotificationToUser(userFromIDs.get(user.getUid()), userId, "Hello from one user to another!");
-//                        //Version 2
-//                        sendNotificationToUser(userFromIDs.get(user.getUid()), userFromIDs.get(userId), nameFromIDs.get(user.getUid()));
-//                    }
-//                })
-//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        dialogInterface.cancel();
-//                    }
-//                });
-//        final AlertDialog alertDialog = alertDialogBuilder.create();
-//        alertDialog.show();
-//
-//        Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-//        positiveButton.setEnabled(validRecipient);
-//
-//        recipient.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                validRecipient = false;
-//                if (currentOutgoingRequests.containsKey(charSequence.toString())) {
-//                    recipientPromptTextView.setText(R.string.recipient_already_requested);
-//                }
-//                else if (currentUserName().equals(charSequence.toString())) {
-//                    recipientPromptTextView.setText(R.string.recipient_is_current_user);
-//                }
-//                else if (existingUsers.contains(charSequence.toString())) {
-//                    Log.d(TAG, "current and char = " + currentUserName() + " and " + charSequence);
-//                    recipientPromptTextView.setText(R.string.recipient_prompt);
-//                    validRecipient = true;
-//                }
-//                else {
-//                    recipientPromptTextView.setText(R.string.recipient_inexistent);
-//                }
-//
-//                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(validRecipient);
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//
-//            }
-//        });
-//
-////        sendNotificationToUser("john", "Hello");
-//    }
+    public void sendMessage(View view) {
+        Context context = view.getContext();
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        View dialogView = layoutInflater.inflate(R.layout.send_to_username_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setView(dialogView);
+        final EditText recipient = (EditText) dialogView.findViewById(R.id.et_recipient);
+        final TextView recipientPromptTextView = (TextView) dialogView.findViewById(R.id.tv_send_to_username_prompt);
+
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String username = recipient.getText().toString();
+                        String userId = idFromUsers.get(username);
+                        Log.d(TAG, "Id of this user is " + idFromUsers.get(username));
+                        //Version 1
+//                        sendNotificationToUser(userFromIDs.get(user.getUid()), userId, "Hello from one user to another!");
+                        //Version 2
+                        sendNotificationToUser(userFromIDs.get(user.getUid()), userFromIDs.get(userId), nameFromIDs.get(user.getUid()));
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
+        Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        positiveButton.setEnabled(validRecipient);
+
+        recipient.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                validRecipient = false;
+                if (currentFriends.containsKey(charSequence.toString())) {
+                    validRecipient = true;
+                }
+                else {
+                    recipientPromptTextView.setText(R.string.recipient_not_friend);
+                }
+
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(validRecipient);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+//        sendNotificationToUser("john", "Hello");
+    }
 
     public void sendRequest(View view) {
         Context context = view.getContext();
@@ -611,7 +695,9 @@ public class MainActivity extends AppCompatActivity {
                         dialogInterface.cancel();
                     }
                 });
+
         final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show();
 
         Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -629,6 +715,10 @@ public class MainActivity extends AppCompatActivity {
                 if (currentOutgoingRequests.containsKey(charSequence.toString())) {
                     recipientPromptTextView.setText(R.string.recipient_already_requested);
                 }
+                else if (currentFriends.containsKey(charSequence.toString())) {
+                    recipientPromptTextView.setText(R.string.recipient_already_friends);
+                    recipientPromptTextView.append(" " +charSequence.toString());
+                }
                 else if (currentIncomingRequests.containsKey(charSequence.toString())) {
                     recipientPromptTextView.setText(R.string.recipient_requested_sender);
                 }
@@ -636,9 +726,11 @@ public class MainActivity extends AppCompatActivity {
                     recipientPromptTextView.setText(R.string.recipient_is_current_user);
                 }
                 else if (existingUsers.contains(charSequence.toString())) {
-                    Log.d(TAG, "current and char = " + currentUserName() + " and " + charSequence);
                     recipientPromptTextView.setText(R.string.recipient_prompt);
                     validRecipient = true;
+                }
+                else if (charSequence.length() == 0) {
+                    recipientPromptTextView.setText(R.string.recipient_prompt);
                 }
                 else {
                     recipientPromptTextView.setText(R.string.recipient_inexistent);
@@ -683,6 +775,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show();
         Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         positiveButton.setEnabled(validUsername);
@@ -788,6 +881,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String currentUserName() {
+        //This is sometimes null
         return (String) userFromIDs.get(user.getUid());
     }
 
