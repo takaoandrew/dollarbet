@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     public static DatabaseReference outgoingRequestsRef;
     public static DatabaseReference friendsRef;
     public static ArrayList<String> existingUsers;
+    public static ArrayList<String> existingUserIds;
     public static HashMap<String, String> idFromUsers;
     public static HashMap<String, String> userFromIDs;
     public static HashMap<String, String> nameFromIDs;
@@ -80,11 +81,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Set a default, since the app will crash otherwise?
-        username = "aaa";
-
         Log.d(TAG, "OnCreate");
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -101,24 +98,6 @@ public class MainActivity extends AppCompatActivity {
         currentOutgoingRequests = new HashMap<>();
         currentIncomingRequests = new HashMap<>();
 
-        if (user != null) {
-            addUserSpecificListeners();
-        }
-        else {
-            Log.d(TAG, "Not logged in");
-            // Choose authentication providers
-            List<AuthUI.IdpConfig> providers = Arrays.asList(
-                    new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
-// Create and launch sign-in intent
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .build(),
-                    RC_SIGN_IN);
-        }
-
         requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         friendsRefListener = new ChildEventListener() {
@@ -126,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "getFriends: onChildAdded-- current friends was " + currentFriends.keySet().toString());
                 currentFriends.put((String) dataSnapshot.getKey(),
-                        (String) dataSnapshot.child("message").getValue());
+                        (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getFriends: onChildAdded-- current friends now " + currentFriends.keySet().toString());
             }
 
@@ -134,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "getFriends: onChildChanged-- current friends was " + currentFriends.keySet().toString());
                 currentFriends.put((String) dataSnapshot.getKey(),
-                        (String) dataSnapshot.child("message").getValue());
+                        (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getFriends: onChildChanged-- current friends now " + currentFriends.keySet().toString());
             }
 
@@ -162,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "getOutgoingRequests: onChildAdded-- currentOutgoingRequests was "
                         + currentOutgoingRequests.keySet().toString());
                 currentOutgoingRequests.put((String) dataSnapshot.getKey(),
-                        (String) dataSnapshot.child("message").getValue());
+                        (String) dataSnapshot.child("fromName").getValue());
 
                 Log.d(TAG, "getOutgoingRequests: onChildAdded-- currentOutgoingRequests now "
                         + currentOutgoingRequests.keySet().toString());
@@ -173,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "getOutgoingRequests: onChildChanged-- currentOutgoingRequests was "
                         + currentOutgoingRequests.keySet().toString());
                 currentOutgoingRequests.put((String) dataSnapshot.getKey(),
-                        (String) dataSnapshot.child("message").getValue());
+                        (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getOutgoingRequests: onChildChanged-- currentOutgoingRequests now "
                         + currentOutgoingRequests.keySet().toString());
             }
@@ -203,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "getIncomingRequests: onChildAdded-- currentIncomingRequests was "
                         + currentIncomingRequests.keySet().toString());
-                currentIncomingRequests.put((String) dataSnapshot.child("from").getValue(),
-                        (String) dataSnapshot.child("message").getValue());
+                currentIncomingRequests.put((String) dataSnapshot.child("fromId").getValue(),
+                        (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getIncomingRequests: onChildAdded-- currentIncomingRequests now "
                         + currentIncomingRequests.keySet().toString());
                 updateAdapter();
@@ -214,8 +193,8 @@ public class MainActivity extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "getIncomingRequests: onChildChanged-- currentIncomingRequests was "
                         + currentIncomingRequests.keySet().toString());
-                currentIncomingRequests.put((String) dataSnapshot.child("from").getValue(),
-                        (String) dataSnapshot.child("message").getValue());
+                currentIncomingRequests.put((String) dataSnapshot.child("fromId").getValue(),
+                        (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getIncomingRequests: onChildChanged-- currentIncomingRequests now "
                         + currentIncomingRequests.keySet().toString());
                 updateAdapter();
@@ -225,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "getIncomingRequests: onChildRemoved-- currentIncomingRequests was "
                         + currentIncomingRequests.keySet().toString());
-                currentIncomingRequests.remove((String) dataSnapshot.child("from").getValue());
+                currentIncomingRequests.remove((String) dataSnapshot.child("fromId").getValue());
                 Log.d(TAG, "getIncomingRequests: onChildRemoved-- currentIncomingRequests now "
                         + currentIncomingRequests.keySet().toString());
                 updateAdapter();
@@ -248,20 +227,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "getUsers: onChildAdded-- existingUsers was " + existingUsers.toString());
                 idFromUsers.put((String) dataSnapshot.child("userName").getValue(),
                         (String) dataSnapshot.child("userId").getValue());
-                existingUsers.add(dataSnapshot.getKey());
+                existingUserIds.add(dataSnapshot.getKey());
+                existingUsers.add((String) dataSnapshot.child("userName").getValue());
                 userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
                         (String) dataSnapshot.child("userName").getValue());
                 nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
                         (String) dataSnapshot.child("fullName").getValue());
                 Log.d(TAG, "getUsers: onChildAdded-- existingUsers now " + existingUsers.toString());
-                //Only get requests once the current user has been added to the hash maps
-//                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
-//                    Log.d(TAG, "getUsers: onChildAdded-- currentUser added");
-//                    username = currentUserName();
-//                    getIncomingRequests();
-//                    getOutgoingRequests();
-//                    getFriends();
-//                }
             }
 
             @Override
@@ -274,13 +246,6 @@ public class MainActivity extends AppCompatActivity {
                 nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
                         (String) dataSnapshot.child("fullName").getValue());
                 Log.d(TAG, "getUsers: onChildChanged-- existingUsers now " + existingUsers.toString());
-//                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
-//                    Log.d(TAG, "getUsers: onChildChanged-- currentUser changed");
-//                    username = currentUserName();
-//                    getIncomingRequests();
-//                    getOutgoingRequests();
-//                    getFriends();
-//                }
             }
 
             @Override
@@ -291,13 +256,6 @@ public class MainActivity extends AppCompatActivity {
                 nameFromIDs.remove((String) dataSnapshot.child("userId").getValue());
                 existingUsers.remove(dataSnapshot.getKey());
                 Log.d(TAG, "getUsers: onChildRemoved-- existingUsers now " + existingUsers.toString());
-//                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
-//                    Log.d(TAG, "getUsers: onChildRemoved-- currentUser removed");
-//                    username = currentUserName();
-//                    getIncomingRequests();
-//                    getOutgoingRequests();
-//                    getFriends();
-//                }
             }
 
             @Override
@@ -310,102 +268,31 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+        getUsers();
 
-//        usersRef = database.getReference("users");
-//
-//        usersRef.addChildEventListener( new ChildEventListener() {
-//                                            @Override
-//                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                                                Log.d(TAG, "getUsers: onChildAdded-- existingUsers was " + existingUsers.toString());
-//                                                idFromUsers.put((String) dataSnapshot.child("userName").getValue(),
-//                                                        (String) dataSnapshot.child("userId").getValue());
-//                                                existingUsers.add(dataSnapshot.getKey());
-//                                                userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
-//                                                        (String) dataSnapshot.child("userName").getValue());
-//                                                nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
-//                                                        (String) dataSnapshot.child("fullName").getValue());
-//                                                Log.d(TAG, "getUsers: onChildAdded-- existingUsers now " + existingUsers.toString());
-//                                                //Only get requests once the current user has been added to the hash maps
-//                                                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
-//                                                    Log.d(TAG, "getUsers: onChildAdded-- currentUser added");
-//                                                    username = currentUserName();
-//                                                    getIncomingRequests();
-//                                                    getOutgoingRequests();
-//                                                    getFriends();
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//                                                Log.d(TAG, "getUsers: onChildChanged-- existingUsers was " + existingUsers.toString());
-//                                                idFromUsers.put((String) dataSnapshot.child("userName").getValue(),
-//                                                        (String) dataSnapshot.child("userId").getValue());
-//                                                userFromIDs.put((String) dataSnapshot.child("userId").getValue(),
-//                                                        (String) dataSnapshot.child("userName").getValue());
-//                                                nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
-//                                                        (String) dataSnapshot.child("fullName").getValue());
-//                                                Log.d(TAG, "getUsers: onChildChanged-- existingUsers now " + existingUsers.toString());
-//                                                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
-//                                                    Log.d(TAG, "getUsers: onChildChanged-- currentUser changed");
-//                                                    username = currentUserName();
-//                                                    getIncomingRequests();
-//                                                    getOutgoingRequests();
-//                                                    getFriends();
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                                                Log.d(TAG, "getUsers: onChildRemoved-- existingUsers was " + existingUsers.toString());
-//                                                idFromUsers.remove((String) dataSnapshot.child("userName").getValue());
-//                                                userFromIDs.remove((String) dataSnapshot.child("userId").getValue());
-//                                                nameFromIDs.remove((String) dataSnapshot.child("userId").getValue());
-//                                                existingUsers.remove(dataSnapshot.getKey());
-//                                                Log.d(TAG, "getUsers: onChildRemoved-- existingUsers now " + existingUsers.toString());
-//                                                if (dataSnapshot.child("userId").getValue().equals(user.getUid())) {
-//                                                    Log.d(TAG, "getUsers: onChildRemoved-- currentUser removed");
-//                                                    username = currentUserName();
-//                                                    getIncomingRequests();
-//                                                    getOutgoingRequests();
-//                                                    getFriends();
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//                                            }
-//
-//                                            @Override
-//                                            public void onCancelled(DatabaseError databaseError) {
-//
-//                                            }
-//                                        });
+        determineLoginStatus();
 
-        //Values style, changed to child style
-//        usersRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                idFromUsers = new HashMap<>();
-//                userFromIDs = new HashMap<>();
-//                existingUsers = new ArrayList<>();
-//                for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-//                    Log.d(TAG, "cycling through users in firebase database");
-//                    existingUsers.add((String) singleSnapshot.child("userName").getValue());
-//                    idFromUsers.put(
-//                            (String) singleSnapshot.child("userName").getValue(),
-//                            (String) singleSnapshot.child("userId").getValue());
-//                    userFromIDs.put(
-//                            (String) singleSnapshot.child("userId").getValue(),
-//                            (String) singleSnapshot.child("userName").getValue());
-//                    Log.d(TAG, "the child username has value " + singleSnapshot.child("userName").getValue());
-//                }
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+    }
+
+    public void determineLoginStatus() {
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+            addUserSpecificListeners();
+        } else {
+            Log.d(TAG, "Not logged in");
+            // Choose authentication providers
+            List<AuthUI.IdpConfig> providers = Arrays.asList(
+                    new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                    new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
+// Create and launch sign-in intent
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN);
+        }
     }
 
     @Override
@@ -414,15 +301,7 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             Log.d(TAG, "onResume: Logged in: Current user: " + user.getDisplayName());
             userId = user.getUid();
-            currentFriends = new HashMap<>();
-            currentOutgoingRequests = new HashMap<>();
-            currentIncomingRequests = new HashMap<>();
             currentUserView.setText("Welcome, " + user.getDisplayName());
-            getUsers();
-            getIncomingRequests();
-            getOutgoingRequests();
-            getFriends();
-            String userId = user.getUid();
             FirebaseMessaging.getInstance().subscribeToTopic("user_"+userId);
         }
     }
@@ -446,7 +325,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void addUserSpecificListeners() {
         Log.d(TAG, "addUserSpecificListeners");
-        username = currentUserName();
+        userId = user.getUid();
+//        username = currentUserName();
         getFriends();
         getIncomingRequests();
         getOutgoingRequests();
@@ -461,9 +341,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void getFriends() {
         Log.d(TAG, "getFriends");
-        if (username != null) {
-            Log.d(TAG, "getFriends: username = " + username);
-            friendsRef = database.getReference("users/" + username + "/friends");
+        if (userId != null) {
+//            Log.d(TAG, "getFriends: username = " + username);
+            Log.d(TAG, "getFriends: userId = " + userId);
+            friendsRef = database.getReference("users/" + userId + "/friends");
             friendsRef.addChildEventListener(friendsRefListener);
         }
 
@@ -471,18 +352,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void getOutgoingRequests() {
         Log.d(TAG, "getOutgoingRequests");
-
-        if (username != null) {
-            outgoingRequestsRef = database.getReference("users/" + username + "/outgoingRequests");
+        if (userId != null) {
+            outgoingRequestsRef = database.getReference("users/" + userId + "/outgoingRequests");
             outgoingRequestsRef.addChildEventListener(outgoingRequestsRefListener);
         }
     }
 
     public void getIncomingRequests() {
         Log.d(TAG, "getIncomingRequests");
-        if (username != null) {
+        if (userId != null) {
             Log.d(TAG, "username != null");
-            incomingRequestsRef = database.getReference("users/" + username + "/incomingRequests");
+            incomingRequestsRef = database.getReference("users/" + userId + "/incomingRequests");
             incomingRequestsRef.addChildEventListener(incomingRequestsRefListener);
         }
     }
@@ -497,6 +377,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "getUsers");
         //This should update local data every time a user's data changes in the firebase database
         existingUsers = new ArrayList<>();
+        existingUserIds = new ArrayList<>();
         idFromUsers = new HashMap<String, String>();
         userFromIDs = new HashMap<String, String>();
         nameFromIDs = new HashMap<String, String>();
@@ -525,6 +406,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //returning user
 //                    receiverRegistration();
+                    getUsers();
                     addUserSpecificListeners();
                 }
                 // Successfully signed in
@@ -562,19 +444,19 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     //Version 2
-    public static void sendNotificationToUser(String sender, String receiver, final String message) {
+    public static void sendNotificationToUser(String sender, String receiver, final String senderName) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
         DatabaseReference incomingRequests = ref.child("users").child(receiver).child("incomingRequests").child(sender);
         DatabaseReference outgoingRequests = ref.child("users").child(sender).child("outgoingRequests").child(receiver);
 
         Map incomingRequest = new HashMap<>();
-        incomingRequest.put("message", message);
-        incomingRequest.put("from", sender);
+        incomingRequest.put("fromName", senderName);
+        incomingRequest.put("fromId", sender);
 
         Map outgoingRequest = new HashMap<>();
-        outgoingRequest.put("message", message);
-        outgoingRequest.put("from", sender);
+        outgoingRequest.put("fromName", senderName);
+        outgoingRequest.put("fromId", sender);
 
         incomingRequests.setValue(incomingRequest);
         outgoingRequests.setValue(outgoingRequest);
@@ -597,9 +479,10 @@ public class MainActivity extends AppCompatActivity {
 
 //        receiverUnregistration();
         FirebaseAuth.getInstance().signOut();
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
+//        Intent intent = getIntent();
+//        finish();
+//        startActivity(intent);
+        determineLoginStatus();
     }
 
     //Only send to friends confirmed
@@ -618,12 +501,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String username = recipient.getText().toString();
-                        String userId = idFromUsers.get(username);
+                        String recipientUserId = idFromUsers.get(username);
                         Log.d(TAG, "Id of this user is " + idFromUsers.get(username));
                         //Version 1
 //                        sendNotificationToUser(userFromIDs.get(user.getUid()), userId, "Hello from one user to another!");
                         //Version 2
-                        sendNotificationToUser(userFromIDs.get(user.getUid()), userFromIDs.get(userId), nameFromIDs.get(user.getUid()));
+                        sendNotificationToUser(user.getUid(), recipientUserId, nameFromIDs.get(user.getUid()));
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -633,6 +516,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         final AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show();
 
         Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -647,7 +531,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 validRecipient = false;
-                if (currentFriends.containsKey(charSequence.toString())) {
+                if (currentFriends.containsKey(idFromUsers.get(charSequence.toString()))) {
+                    recipientPromptTextView.setText(R.string.recipient_valid);
+                    recipientPromptTextView.append(" "+charSequence.toString());
                     validRecipient = true;
                 }
                 else {
@@ -681,12 +567,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String recipientUsername = recipient.getText().toString();
-                        String userId = idFromUsers.get(recipientUsername);
+                        String recipientUserId = idFromUsers.get(recipientUsername);
                         Log.d(TAG, "Id of this user is " + idFromUsers.get(recipientUsername));
                         //Version 1
 //                        sendNotificationToUser(userFromIDs.get(user.getUid()), userId, "Hello from one user to another!");
                         //Version 2
-                        sendNotificationToUser(userFromIDs.get(user.getUid()), userFromIDs.get(userId), nameFromIDs.get(user.getUid()));
+                        sendNotificationToUser(user.getUid(), recipientUserId, nameFromIDs.get(user.getUid()));
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -712,16 +598,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 validRecipient = false;
-                if (currentOutgoingRequests.containsKey(charSequence.toString())) {
+                if (currentOutgoingRequests.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_already_requested);
                 }
-                else if (currentFriends.containsKey(charSequence.toString())) {
+                else if (currentFriends.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_already_friends);
                     recipientPromptTextView.append(" " +charSequence.toString());
                 }
-                else if (currentIncomingRequests.containsKey(charSequence.toString())) {
+                else if (currentIncomingRequests.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_requested_sender);
                 }
+                //TODO fix this
                 else if (currentUserName().equals(charSequence.toString())) {
                     recipientPromptTextView.setText(R.string.recipient_is_current_user);
                 }
@@ -820,7 +707,7 @@ public class MainActivity extends AppCompatActivity {
     //Set username in firebase, called after creating new account
     public void setUserName(String username) {
         Log.d(TAG, "Uid = " + user.getUid());
-        usersRef.child(username).setValue((new User(user.getUid(), user.getDisplayName(), username)));
+        usersRef.child(userId).setValue((new User(user.getUid(), user.getDisplayName(), username)));
         //A new user was just added
         addUserSpecificListeners();
     }

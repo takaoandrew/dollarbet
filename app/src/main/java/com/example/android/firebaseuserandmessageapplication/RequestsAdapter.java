@@ -46,8 +46,8 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.MainVi
     @Override
     public void onBindViewHolder(MainViewHolder holder, final int position) {
         //holder.bindData();
-        holder.mainText.setText((String) keys.get(position)); // value for the given key
-        holder.subText.setText((String) values.get(position)); // value for the given key
+        holder.mainText.setText((String) values.get(position)); // value for the given key
+//        holder.subText.setText((String) values.get(position)); // value for the given key
         holder.acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,12 +62,12 @@ public class RequestsAdapter extends RecyclerView.Adapter<RequestsAdapter.MainVi
                 Map acceptedsFriend = new HashMap<>();
                 acceptedsFriendsRef = MainActivity.database.getReference("users/" + acceptedFriend + "/friends");
                 acceptedsOutgoingRequestsRef = MainActivity.database.getReference("users/" + acceptedFriend + "/outgoingRequests");
-                acceptedsOutgoingRequestsRef.child(MainActivity.username).removeValue();
-                acceptedsFriend.put("message", MainActivity.username);
+                acceptedsOutgoingRequestsRef.child(MainActivity.userId).removeValue();
+                acceptedsFriend.put("message", MainActivity.userId);
                 acceptingsFriend.put("message", acceptedFriend);
 
                 MainActivity.friendsRef.child((String) keys.get(position)).setValue(acceptingsFriend);
-                acceptedsFriendsRef.child(MainActivity.username).setValue(acceptedsFriend);
+                acceptedsFriendsRef.child(MainActivity.userId).setValue(acceptedsFriend);
 //                Log.d(TAG, MainActivity.incomingRequestsRef.child((String) keys.get(position)));
                 updateAdapter();
             }

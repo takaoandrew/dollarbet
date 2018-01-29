@@ -20,4 +20,5 @@
     <string name="recipient_requested_sender">this username has added you</string>
     <string name="recipient_already_friends">you are already friends with</string>
     <string name="recipient_not_friend">Please choose a friends username</string>
+    <string name="recipient_valid">Send to</string>
 </resources>
