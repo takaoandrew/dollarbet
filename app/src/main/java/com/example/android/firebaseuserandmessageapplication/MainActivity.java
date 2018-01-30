@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.databinding.DataBindingUtil;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.android.firebaseuserandmessageapplication.databinding.ActivityMainBinding;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,15 +69,12 @@ public class MainActivity extends AppCompatActivity {
     public static HashMap<String, String> currentOutgoingMessages;
     public static HashMap<String, String> currentFriends;
     public static HashMap<String, String> currentPropositions;
-    private TextView receivedMessageView;
-    private TextView currentUserView;
     private boolean validUsername = false;
     private boolean validRecipient = false;
     private boolean validMessage = false;
     private final static int userNameMaximumLength = 15;
     private FirebaseUser user;
     private MyBroadcastReceiver receiver;
-    private Button closeButton;
     public static String username;
     public static String userId;
     ChildEventListener friendsRefListener;
@@ -86,28 +85,24 @@ public class MainActivity extends AppCompatActivity {
     ChildEventListener outgoingMessagesRefListener;
     ChildEventListener incomingMessagesRefListener;
 
-    private RecyclerView requestsRecyclerView;
-    private RecyclerView messagesRecyclerView;
     private RequestsAdapter requestsAdapter;
     private MessagesAdapter messagesAdapter;
+    ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
         Log.d(TAG, "OnCreate");
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
         //Get user and see if logged in or not
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance();
-        receivedMessageView = findViewById(R.id.received_message);
-        currentUserView = findViewById(R.id.current_user);
-
-        requestsRecyclerView = findViewById(R.id.rv_requests);
-        messagesRecyclerView = findViewById(R.id.rv_messages);
-        closeButton = findViewById(R.id.close_friends);
 
         currentFriends = new HashMap<>();
         currentPropositions = new HashMap<>();
@@ -117,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
         currentIncomingMessages = new HashMap<>();
         currentIncomingMessagesArrayList = new ArrayList<>();
 
-        requestsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvRequests.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvMessages.setLayoutManager(new LinearLayoutManager(this));
 
         friendsRefListener = new ChildEventListener() {
             @Override
@@ -361,7 +356,6 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        };
-
         incomingMessagesRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -379,6 +373,8 @@ public class MainActivity extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Log.d(TAG, "currentIncomingMessagesArrayList: onChildChanged-- currentIncomingMessagesArrayList length was "
                         + currentIncomingMessagesArrayList.size());
+                Log.d(TAG, "currentIncomingMessagesArrayList.get(0): " + currentIncomingMessagesArrayList.get(0).timestamp);
+                onChildRemoved(dataSnapshot);
                 currentIncomingMessagesArrayList.add(new Proposition((String) dataSnapshot.child("timestamp").getValue(),
                         (String) dataSnapshot.child("senderUserId").getValue(),
                         (String) dataSnapshot.child("message").getValue()));
@@ -389,11 +385,25 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+                //Remove by searching for matching timestamp
                 Log.d(TAG, "currentIncomingMessagesArrayList: onChildRemoved-- currentIncomingMessagesArrayList length was "
                         + currentIncomingMessagesArrayList.size());
-                Log.d(TAG, "timestamp = " + dataSnapshot.child("timestamp").getValue());
-                //TODO Fix removal
-                currentIncomingMessagesArrayList.remove(dataSnapshot.child("timestamp").getValue());
+                String timestamp = (String) dataSnapshot.child("timestamp").getValue();
+                Log.d(TAG, "currentIncomingMessagesArrayList: onChildRemoved-- timestamp = " + dataSnapshot.child("timestamp").getValue());
+                int indexRemoved = 0;
+                for (Proposition proposition: currentIncomingMessagesArrayList) {
+                    if (proposition.timestamp.compareTo(timestamp) != 0) {
+                        Log.d(TAG, "currentIncomingMessagesArrayList: onChildRemoved-- timestamp is not same at that index, move on");
+                        Log.d(TAG, "currentIncomingMessagesArrayList: onChildRemoved-- timestamp at index " + indexRemoved + " is " + proposition.timestamp);
+                        indexRemoved += 1;
+                    }
+                    else {
+                        Log.d(TAG, "currentIncomingMessagesArrayList: onChildRemoved-- removing index " + indexRemoved + " timestamp " + proposition.timestamp);
+                        currentIncomingMessagesArrayList.remove(indexRemoved);
+                        break;
+                    }
+                }
+//                currentIncomingMessagesArrayList.rem(dataSnapshot.child("timestamp").getValue());
                 Log.d(TAG, "currentIncomingMessagesArrayList: onChildRemoved-- currentIncomingMessagesArrayList length now "
                         + currentIncomingMessagesArrayList.size());
                 updateMessagesAdapter();
@@ -457,10 +467,18 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+
         getUsers();
 
         determineLoginStatus();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeUserSpecificListeners();
+        usersRef.removeEventListener(usersRefListener);
+        super.onDestroy();
     }
 
     public void determineLoginStatus() {
@@ -490,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             Log.d(TAG, "onResume: Logged in: Current user: " + user.getDisplayName());
             userId = user.getUid();
-            currentUserView.setText("Welcome, " + user.getDisplayName());
+            binding.currentUser.setText("Welcome, " + user.getDisplayName());
             FirebaseMessaging.getInstance().subscribeToTopic("user_"+userId);
         }
     }
@@ -589,14 +607,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateRequestsAdapter() {
-        requestsAdapter = new RequestsAdapter(this, currentIncomingRequests);
-        requestsRecyclerView.setAdapter(requestsAdapter);
-//        requestsAdapter.updateRequestsAdapter();
+        if (requestsAdapter != null) {
+            requestsAdapter.updateAdapter();
+        } else {
+            requestsAdapter = new RequestsAdapter(this, currentIncomingRequests);
+            binding.rvRequests.setAdapter(requestsAdapter);
+        }
+        countFriendRequests(requestsAdapter.getItemCount());
     }
 
     public void updateMessagesAdapter() {
-        messagesAdapter = new MessagesAdapter(this, currentIncomingMessagesArrayList);
-        messagesRecyclerView.setAdapter(messagesAdapter);
+        if (messagesAdapter != null) {
+            messagesAdapter.updateAdapter();
+        } else {
+            messagesAdapter = new MessagesAdapter(this, currentIncomingMessagesArrayList);
+            binding.rvMessages.setAdapter(messagesAdapter);
+        }
     }
 
     public void getUsers() {
@@ -632,7 +658,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //returning user
 //                    receiverRegistration();
-                    getUsers();
+//                    getUsers();
                     addUserSpecificListeners();
                 }
                 // Successfully signed in
@@ -708,6 +734,28 @@ public class MainActivity extends AppCompatActivity {
         //must unsubscribe on sign out
         FirebaseMessaging.getInstance().unsubscribeFromTopic("user_"+user.getUid());
         removeUserSpecificListeners();
+
+        //New data
+        currentFriends = new HashMap<>();
+        currentPropositions = new HashMap<>();
+        currentOutgoingRequests = new HashMap<>();
+        currentIncomingRequests = new HashMap<>();
+        currentOutgoingMessages = new HashMap<>();
+        currentIncomingMessages = new HashMap<>();
+        currentIncomingMessagesArrayList = new ArrayList<>();
+        updateRequestsAdapter();
+        updateMessagesAdapter();
+
+//        receiverUnregistration();
+        FirebaseAuth.getInstance().signOut();
+//        Intent intent = getIntent();
+//        finish();
+//        startActivity(intent);
+        determineLoginStatus();
+    }
+
+    //To be called after deleting a new account
+    public void signOutNewUser() {
 
         //New data
         currentFriends = new HashMap<>();
@@ -878,8 +926,7 @@ public class MainActivity extends AppCompatActivity {
                 else if (currentIncomingRequests.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_requested_sender);
                 }
-                //TODO fix this
-                else if (currentUserName().equals(charSequence.toString())) {
+                else if (charSequence.toString().equals(currentUserName())) {
                     recipientPromptTextView.setText(R.string.recipient_is_current_user);
                 }
                 else if (existingUsers.contains(charSequence.toString())) {
@@ -928,6 +975,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //TODO delete user from Users in firebase
                         dialogInterface.cancel();
+                        user.delete();
+                        signOutNewUser();
                     }
                 });
 
@@ -990,7 +1039,7 @@ public class MainActivity extends AppCompatActivity {
 
             String message = intent.getStringExtra(Intent.EXTRA_TEXT);
             String from = intent.getStringExtra("from_extra");
-            receivedMessageView.setText(message);
+            binding.receivedMessage.setText(message);
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
             DatabaseReference users = ref.child("users");
@@ -1028,18 +1077,73 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public void openFriends(View view) {
-        requestsRecyclerView.setVisibility(View.VISIBLE);
-        closeButton.setVisibility(View.VISIBLE);
+        binding.rvRequests.setVisibility(View.VISIBLE);
+        binding.closeFriends.setVisibility(View.VISIBLE);
+        binding.noFriendRequests.setVisibility(View.VISIBLE);
+        binding.rvMessages.setVisibility(View.GONE);
+        binding.messages.setVisibility(View.GONE);
+        binding.signOut.setVisibility(View.GONE);
+        binding.currentUser.setVisibility(View.GONE);
+        binding.receivedMessage.setVisibility(View.GONE);
+
+        updateRequestsAdapter();
+        countFriendRequests(requestsAdapter.getItemCount());
     }
 
     public void closeFriends(View view) {
-        requestsRecyclerView.setVisibility(View.INVISIBLE);
-        closeButton.setVisibility(View.INVISIBLE);
+        binding.rvRequests.setVisibility(View.INVISIBLE);
+        binding.closeFriends.setVisibility(View.INVISIBLE);
+        binding.noFriendRequests.setVisibility(View.INVISIBLE);
+        binding.rvMessages.setVisibility(View.VISIBLE);
+        binding.messages.setVisibility(View.VISIBLE);
+        binding.signOut.setVisibility(View.VISIBLE);
+        binding.currentUser.setVisibility(View.VISIBLE);
+        binding.receivedMessage.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.rvRequests.getVisibility()==View.VISIBLE) {
+            closeFriends(null);
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     public String currentUserName() {
         //This is sometimes null
         return (String) userFromIDs.get(user.getUid());
+    }
+
+    public void countFriendRequests(int count) {
+        if (count == 0 && binding.rvRequests.getVisibility()==View.VISIBLE) {
+            Log.d(TAG, "countFriendRequests, count is 0");
+            binding.noFriendRequests.setVisibility(View.VISIBLE);
+        }
+        else {
+            binding.noFriendRequests.setVisibility(View.GONE);
+        }
+    }
+
+    public void toggleAddOptions(View view) {
+        if (binding.fabAddProposition.getVisibility()==View.VISIBLE) {
+            binding.fabAddFriend.setVisibility(View.GONE);
+            binding.fabAddProposition.setVisibility(View.GONE);
+
+        } else {
+            binding.fabAddFriend.setVisibility(View.VISIBLE);
+            binding.fabAddProposition.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void addFriend(View view) {
+        sendRequest(view);
+        toggleAddOptions(view);
+    }
+    public void addProposition(View view) {
+        sendMessage(view);
+        toggleAddOptions(view);
     }
 
 }
