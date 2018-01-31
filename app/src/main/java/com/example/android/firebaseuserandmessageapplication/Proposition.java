@@ -8,13 +8,22 @@ import java.util.ArrayList;
 
 public class Proposition {
     public String timestamp;
-    public String senderUserId;
+    public String otherUserId;
     public String message;
+    public String resolution;
 
-    public Proposition(String tempTimestamp, String tempSenderUserId, String tempMessage) {
+    public Proposition(String tempTimestamp, String tempotherUserId, String tempMessage) {
         timestamp = tempTimestamp;
-        senderUserId = tempSenderUserId;
+        otherUserId = tempotherUserId;
         message = tempMessage;
+        resolution = "unresolved";
+    }
+
+    public Proposition(String tempTimestamp, String tempotherUserId, String tempMessage, String tempResolution) {
+        timestamp = tempTimestamp;
+        otherUserId = tempotherUserId;
+        message = tempMessage;
+        resolution = tempResolution;
     }
 
 }

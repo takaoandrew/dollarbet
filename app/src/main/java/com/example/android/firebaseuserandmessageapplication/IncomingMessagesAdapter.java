@@ -12,26 +12,24 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by andrew.takao on 1/25/2018.
  */
 
-public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainViewHolder> {
+public class IncomingMessagesAdapter extends RecyclerView.Adapter<IncomingMessagesAdapter.MainViewHolder> {
     LayoutInflater inflater;
 //    HashMap<String,String> messagesHashMap;
     ArrayList<Proposition> messagePropositions;
     DatabaseReference acceptedsPropositionsRef;
     DatabaseReference acceptedsOutgoingMessagesRef;
-    private static final String TAG = MessagesAdapter.class.getSimpleName();
+    private static final String TAG = IncomingMessagesAdapter.class.getSimpleName();
 
-    public MessagesAdapter(Context context, ArrayList<Proposition> propositions) {
+    public IncomingMessagesAdapter(Context context, ArrayList<Proposition> propositions) {
         this.inflater = LayoutInflater.from(context);
         this.messagePropositions = propositions;
     }
-//    public MessagesAdapter(Context context, HashMap <String,String> messagesHashMap) {
+//    public IncomingMessagesAdapter(Context context, HashMap <String,String> messagesHashMap) {
 //        this.inflater = LayoutInflater.from(context);
 //        this.messagesHashMap = messagesHashMap;
 //        this.keys = new ArrayList(messagesHashMap.keySet());
@@ -40,14 +38,14 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
 
     @Override
     public MainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.proposition_recycler_row, parent, false);
+        View view = inflater.inflate(R.layout.incoming_proposition_recycler_row, parent, false);
         return new MainViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(MainViewHolder holder, final int position) {
         //holder.bindData();
-        holder.mainText.setText(MainActivity.userFromIDs.get((String) messagePropositions.get(position).senderUserId)); // value for the given key
+        holder.mainText.setText(MainActivity.userFromIDs.get((String) messagePropositions.get(position).otherUserId)); // value for the given key
         holder.subText.setText((String) messagePropositions.get(position).message); // value for the given key
         holder.acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,20 +55,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
                 Log.d(TAG, "You accepted " + position);
 //                String acceptedProposition = (String) messagePropositions.get(position);
                 String timestamp = messagePropositions.get(position).timestamp;
-                String senderId = messagePropositions.get(position).senderUserId;
+                String senderId = messagePropositions.get(position).otherUserId;
                 String message = messagePropositions.get(position).message;
                 Log.d(TAG, "message = " + messagePropositions.get(position).message);
                 Log.d(TAG, "timestamp = " + messagePropositions.get(position).timestamp);
-                Log.d(TAG, "senderId = " + messagePropositions.get(position).senderUserId);
+                Log.d(TAG, "senderId = " + messagePropositions.get(position).otherUserId);
                 MainActivity.incomingMessagesRef.child(timestamp).removeValue();
                 Log.d(TAG, "you removed that child from this users incoming messages");
                 Proposition acceptingsProposition = new Proposition(timestamp, senderId, message);
-                Proposition acceptedsProposition = new Proposition(timestamp, senderId, message);
+                Proposition acceptedsProposition = new Proposition(timestamp, MainActivity.userId, message);
                 acceptedsPropositionsRef = MainActivity.database.getReference("users/" + senderId + "/propositions");
                 acceptedsOutgoingMessagesRef = MainActivity.database.getReference("users/" + senderId + "/outgoingMessages");
                 acceptedsOutgoingMessagesRef.child(timestamp).removeValue();
 
-                MainActivity.propositionsRef.child(timestamp).setValue(acceptingsProposition);
+                MainActivity.acceptedMessagesRef.child(timestamp).setValue(acceptingsProposition);
                 acceptedsPropositionsRef.child(timestamp).setValue(acceptedsProposition);
 //                Log.d(TAG, MainActivity.incomingMessagesRef.child((String) keys.get(position)));
                 updateAdapter();
@@ -86,6 +84,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MainVi
 
     public void updateAdapter() {
         this.messagePropositions = MainActivity.currentIncomingMessagesArrayList;
+        notifyDataSetChanged();
     }
 
     @Override

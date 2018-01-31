@@ -4,106 +4,120 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_height="match_parent"
         android:layout_width="match_parent">
-        <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:titleTextColor="@android:color/white"
+            android:background="@color/colorPrimary"
+            app:title="Message Tester"/>
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context="com.example.android.firebaseuserandmessageapplication.MainActivity">
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            android:layout_marginTop="?attr/actionBarSize"
+            >
+            <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:titleTextColor="@android:color/white"
-                android:background="@color/colorPrimary"
-                app:title="Message Tester">
-            </android.support.v7.widget.Toolbar>
-            <Button
-                android:id="@+id/sign_out"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                android:text="Sign out"
-                android:onClick="signOut"
-                />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/current_user"
-                android:text="Current user appears here"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sign_out" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/received_message"
-                android:text="Message will appear hear"
-                app:layout_constraintTop_toBottomOf="@+id/current_user"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/messages"
-                android:text="Incoming Messages"
-                android:textStyle="bold"
-                android:textSize="28sp"
-                app:layout_constraintTop_toBottomOf="@+id/received_message"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
-            <android.support.v7.widget.RecyclerView
-                android:translationZ="2dp"
-                android:id="@+id/rv_messages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/messages">
-            </android.support.v7.widget.RecyclerView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/accepted_messages"
-                android:text="Accepted Messages"
-                android:textStyle="bold"
-                android:textSize="28sp"
-                app:layout_constraintTop_toBottomOf="@+id/rv_messages"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent" />
-            <android.support.v7.widget.RecyclerView
-                android:translationZ="2dp"
-                android:id="@+id/rv_accepted_messages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/accepted_messages">
-            </android.support.v7.widget.RecyclerView>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/no_friend_requests"
-                android:background="@color/cardview_light_background"
-                app:layout_constraintTop_toBottomOf="@id/toolbar"
-                android:visibility="gone"
-                android:text="@string/no_friend_requests"
-                android:textSize="28sp"/>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_requests"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                app:layout_constraintTop_toBottomOf="@+id/no_friend_requests">
-            </android.support.v7.widget.RecyclerView>
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/close_friends"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar"
-                app:layout_constraintRight_toRightOf="parent"
-                android:visibility="invisible"
-                android:text="@string/close"
-                android:onClick="closeFriends"/>
+                android:layout_height="match_parent"
+                tools:context="com.example.android.firebaseuserandmessageapplication.MainActivity">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/current_user"
+                    android:layout_marginLeft="8dp"
+                    style="@style/title"
+                    android:text="Current user appears here"
+                    app:layout_constraintLeft_toLeftOf="parent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/current_username"
+                    android:layout_marginLeft="8dp"
+                    android:text="Current username appears here"
+                    app:layout_constraintTop_toBottomOf="@+id/current_user"
+                    app:layout_constraintLeft_toLeftOf="parent"/>
+                <Button
+                    android:id="@+id/sign_out"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:text="Sign out"
+                    android:onClick="signOut"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/received_message"
+                    android:text="Message will appear hear"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toBottomOf="@+id/current_user"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/messages"
+                    android:text="Incoming Messages"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    app:layout_constraintTop_toBottomOf="@+id/current_username"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <android.support.v7.widget.RecyclerView
+                    android:translationZ="2dp"
+                    android:id="@+id/rv_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/messages">
+                </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/accepted_messages"
+                    android:text="Accepted Messages"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    app:layout_constraintTop_toBottomOf="@+id/rv_messages"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <android.support.v7.widget.RecyclerView
+                    android:translationZ="2dp"
+                    android:id="@+id/rv_accepted_messages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/accepted_messages">
+                </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/no_friend_requests"
+                    android:background="@color/cardview_light_background"
+                    android:visibility="gone"
+                    android:text="@string/no_friend_requests"
+                    android:textSize="28sp"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_requests"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    app:layout_constraintTop_toBottomOf="@+id/no_friend_requests">
+                </android.support.v7.widget.RecyclerView>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/close_friends"
+                    app:layout_constraintRight_toRightOf="parent"
+                    android:visibility="invisible"
+                    android:text="@string/close"
+                    android:onClick="closeFriends"/>
 
 
-        </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
+
+        </ScrollView>
+
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
