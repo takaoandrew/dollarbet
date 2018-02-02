@@ -36,13 +36,13 @@
                     android:id="@+id/current_username"
                     android:layout_marginLeft="8dp"
                     android:text="Current username appears here"
-                    app:layout_constraintTop_toBottomOf="@+id/current_user"
+                    app:layout_constraintTop_toBottomOf="@id/current_user"
                     app:layout_constraintLeft_toLeftOf="parent"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/won_bets_count"
-                    app:layout_constraintLeft_toRightOf="@+id/current_user"
+                    app:layout_constraintLeft_toRightOf="@id/current_user"
                     style="@style/bet_count"
                     android:text="0"
                     android:textColor="@android:color/holo_green_dark"/>
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/lost_bets_count"
-                    app:layout_constraintLeft_toRightOf="@+id/won_bets_count"
+                    app:layout_constraintLeft_toRightOf="@id/won_bets_count"
                     style="@style/bet_count"
                     android:text="0"
                     android:textColor="@android:color/holo_red_dark"/>
@@ -68,7 +68,7 @@
                     android:id="@+id/received_message"
                     android:text="Message will appear hear"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@+id/current_user"
+                    app:layout_constraintTop_toBottomOf="@id/current_user"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
                 <TextView
@@ -79,7 +79,7 @@
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
                     android:textSize="28sp"
-                    app:layout_constraintTop_toBottomOf="@+id/current_username"
+                    app:layout_constraintTop_toBottomOf="@id/current_username"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
                 <TextView
@@ -90,7 +90,7 @@
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
                     android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@+id/incoming_messages"
+                    app:layout_constraintTop_toBottomOf="@id/incoming_messages"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
                 <android.support.v7.widget.RecyclerView
@@ -98,7 +98,7 @@
                     android:id="@+id/rv_incoming_messages"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/no_incoming_messages">
+                    app:layout_constraintTop_toBottomOf="@id/no_incoming_messages">
                 </android.support.v7.widget.RecyclerView>
                 <TextView
                     android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
                     android:text="Accepted Messages"
                     android:textStyle="bold"
                     android:textSize="28sp"
-                    app:layout_constraintTop_toBottomOf="@+id/rv_incoming_messages"
+                    app:layout_constraintTop_toBottomOf="@id/rv_incoming_messages"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
                 <TextView
@@ -118,7 +118,7 @@
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
                     android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@+id/accepted_messages"
+                    app:layout_constraintTop_toBottomOf="@id/accepted_messages"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent" />
                 <android.support.v7.widget.RecyclerView
@@ -126,22 +126,36 @@
                     android:id="@+id/rv_accepted_messages"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/no_accepted_messages">
+                    app:layout_constraintTop_toBottomOf="@id/no_accepted_messages">
                 </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/friend_requests"
+                    android:text="Friend Requests"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    android:visibility="gone"
+                    android:layout_margin="16dp"
+                    app:layout_constraintLeft_toLeftOf="parent" />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/no_friend_requests"
                     android:background="@color/cardview_light_background"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
                     android:visibility="gone"
-                    android:text="@string/no_friend_requests"
-                    android:textSize="28sp"/>
+                    app:layout_constraintTop_toBottomOf="@id/friend_requests"
+                    android:text="@string/no_friend_requests"/>
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_requests"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="invisible"
-                    app:layout_constraintTop_toBottomOf="@+id/no_friend_requests">
+                    app:layout_constraintTop_toBottomOf="@id/no_friend_requests">
                 </android.support.v7.widget.RecyclerView>
                 <Button
                     android:layout_width="wrap_content"

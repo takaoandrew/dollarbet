@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:titleTextColor="@android:color/white"
+            android:background="@color/colorPrimary"
+            app:title="User Detail"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            >
+            <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.example.android.firebaseuserandmessageapplication.UserDetailActivity">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/current_user"
+                    android:layout_marginLeft="8dp"
+                    style="@style/title"
+                    android:text="Current user appears here"
+                    app:layout_constraintLeft_toLeftOf="parent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/current_username"
+                    android:layout_marginLeft="8dp"
+                    android:text="Current username appears here"
+                    app:layout_constraintTop_toBottomOf="@+id/current_user"
+                    app:layout_constraintLeft_toLeftOf="parent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/won_bets_count"
+                    app:layout_constraintLeft_toRightOf="@+id/current_user"
+                    style="@style/bet_count"
+                    android:text="0"
+                    android:textColor="@android:color/holo_green_dark"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lost_bets_count"
+                    app:layout_constraintLeft_toRightOf="@+id/won_bets_count"
+                    style="@style/bet_count"
+                    android:text="0"
+                    android:textColor="@android:color/holo_red_dark"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/won_propositions"
+                    android:text="Won Propositions"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    app:layout_constraintTop_toBottomOf="@+id/current_username"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/no_won_propositions"
+                    android:text="You have no won propositions"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@+id/won_propositions"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <android.support.v7.widget.RecyclerView
+                    android:translationZ="2dp"
+                    android:id="@+id/rv_won_propositions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/no_won_propositions">
+                </android.support.v7.widget.RecyclerView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/lost_propositions"
+                    android:text="Lost Propositions"
+                    android:textStyle="bold"
+                    android:textSize="28sp"
+                    app:layout_constraintTop_toBottomOf="@+id/rv_won_propositions"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/no_lost_propositions"
+                    android:text="You have no lost propositions"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@+id/lost_propositions"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+                <android.support.v7.widget.RecyclerView
+                    android:translationZ="2dp"
+                    android:id="@+id/rv_lost_propositions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/no_lost_propositions">
+                </android.support.v7.widget.RecyclerView>
+            </android.support.constraint.ConstraintLayout>
+        </ScrollView>
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

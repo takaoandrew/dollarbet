@@ -30,6 +30,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private MyBroadcastReceiver receiver;
     public static String username;
     public static String userId;
+    Context context;
     ChildEventListener friendsRefListener;
     ChildEventListener usersRefListener;
     ChildEventListener outgoingRequestsRefListener;
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
     private IncomingMessagesAdapter incomingMessagesAdapter;
     private AcceptedMessagesAdapter acceptedMessagesAdapter;
     ActivityMainBinding binding;
+
+    int testValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +131,22 @@ public class MainActivity extends AppCompatActivity {
         binding.rvRequests.setLayoutManager(new LinearLayoutManager(this));
         binding.rvIncomingMessages.setLayoutManager(new LinearLayoutManager(this));
         binding.rvAcceptedMessages.setLayoutManager(new LinearLayoutManager(this));
+
+        context = this;
+        testValue = 0;
+        binding.currentUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, UserDetailActivity.class);
+                intent.putExtra("test_value", testValue);
+                intent.putExtra("user_extra", binding.currentUser.getText());
+                intent.putExtra("username_extra", binding.currentUsername.getText());
+                intent.putExtra("won_propositions_extra", binding.wonBetsCount.getText());
+                intent.putExtra("lost_propositions_extra", binding.lostBetsCount.getText());
+                startActivity(intent);
+            }
+        });
+        testValue = 1;
 
         friendsRefListener = new ChildEventListener() {
             @Override
@@ -1326,6 +1346,7 @@ public class MainActivity extends AppCompatActivity {
     public void openFriends(View view) {
         binding.rvRequests.setVisibility(View.VISIBLE);
         binding.closeFriends.setVisibility(View.VISIBLE);
+        binding.friendRequests.setVisibility(View.VISIBLE);
         binding.noFriendRequests.setVisibility(View.VISIBLE);
         binding.rvIncomingMessages.setVisibility(View.GONE);
         binding.rvAcceptedMessages.setVisibility(View.GONE);
@@ -1344,6 +1365,7 @@ public class MainActivity extends AppCompatActivity {
     public void closeFriends(View view) {
         binding.rvRequests.setVisibility(View.INVISIBLE);
         binding.closeFriends.setVisibility(View.INVISIBLE);
+        binding.friendRequests.setVisibility(View.INVISIBLE);
         binding.noFriendRequests.setVisibility(View.INVISIBLE);
         binding.rvIncomingMessages.setVisibility(View.VISIBLE);
         binding.rvAcceptedMessages.setVisibility(View.VISIBLE);
