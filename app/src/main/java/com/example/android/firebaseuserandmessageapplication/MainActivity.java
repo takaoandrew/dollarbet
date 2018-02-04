@@ -1354,6 +1354,9 @@ public class MainActivity extends AppCompatActivity {
         binding.incomingMessages.setVisibility(View.GONE);
         binding.signOut.setVisibility(View.GONE);
         binding.currentUser.setVisibility(View.GONE);
+        binding.currentUsername.setVisibility(View.GONE);
+        binding.wonBetsCount.setVisibility(View.GONE);
+        binding.lostBetsCount.setVisibility(View.GONE);
         binding.noIncomingMessages.setVisibility(View.GONE);
         binding.noAcceptedMessages.setVisibility(View.GONE);
 
@@ -1371,24 +1374,13 @@ public class MainActivity extends AppCompatActivity {
         binding.rvAcceptedMessages.setVisibility(View.VISIBLE);
         binding.acceptedMessages.setVisibility(View.VISIBLE);
         binding.incomingMessages.setVisibility(View.VISIBLE);
+        binding.currentUsername.setVisibility(View.VISIBLE);
+        binding.wonBetsCount.setVisibility(View.VISIBLE);
+        binding.lostBetsCount.setVisibility(View.VISIBLE);
         binding.signOut.setVisibility(View.VISIBLE);
         binding.currentUser.setVisibility(View.VISIBLE);
         showEmptinessMessage(currentIncomingMessagesArrayList.size(), binding.noIncomingMessages);
         showEmptinessMessage(currentAcceptedMessagesArrayList.size(), binding.noAcceptedMessages);
-//        showNoIncomingMessage();
-//        showNoAcceptedMessage();
-    }
-
-    public void showNoAcceptedMessage() {
-        if (currentAcceptedMessagesArrayList.size() == 0 ) {
-            binding.noAcceptedMessages.setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void showNoIncomingMessage() {
-        if (currentIncomingMessagesArrayList.size() == 0 ) {
-            binding.noIncomingMessages.setVisibility(View.VISIBLE);
-        }
     }
 
     public void showEmptinessMessage(int count, View view) {
@@ -1398,36 +1390,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             view.setVisibility(View.GONE);
-        }
-    }
-
-    public void countFriendRequests(int count) {
-        if (count == 0) {
-            Log.d(TAG, "countFriendRequests, count is 0");
-            binding.noFriendRequests.setVisibility(View.VISIBLE);
-        }
-        else {
-            binding.noFriendRequests.setVisibility(View.GONE);
-        }
-    }
-
-    public void countIncomingMessages(int count) {
-        if (count == 0) {
-            Log.d(TAG, "countIncomingMessages, count is 0");
-            binding.noIncomingMessages.setVisibility(View.VISIBLE);
-        }
-        else {
-            binding.noIncomingMessages.setVisibility(View.GONE);
-        }
-    }
-
-    public void countAcceptedMessages(int count) {
-        if (count == 0) {
-            Log.d(TAG, "countAcceptedMessages, count is 0");
-            binding.noAcceptedMessages.setVisibility(View.VISIBLE);
-        }
-        else {
-            binding.noAcceptedMessages.setVisibility(View.GONE);
         }
     }
 

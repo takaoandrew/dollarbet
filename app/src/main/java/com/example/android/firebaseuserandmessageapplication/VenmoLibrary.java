@@ -55,26 +55,26 @@ public class VenmoLibrary {
                 Log.e("venmo_library", "cannot encode note");
             }
         }
+//
+//        try {
+//            venmo_uri += "&app_id=" + URLEncoder.encode(myAppId, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            Log.e("venmo_library", "cannot encode app ID");
+//        }
+//
+//        try {
+//            venmo_uri += "&app_name=" + URLEncoder.encode(myAppName, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            Log.e("venmo_library", "cannot encode app Name");
+//        }
+//
+//        try {
+//            venmo_uri += "&app_local_id=" + URLEncoder.encode("abcd", "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            Log.e("venmo_library", "cannot encode app local id");
+//        }
 
-        try {
-            venmo_uri += "&app_id=" + URLEncoder.encode(myAppId, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e("venmo_library", "cannot encode app ID");
-        }
-
-        try {
-            venmo_uri += "&app_name=" + URLEncoder.encode(myAppName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e("venmo_library", "cannot encode app Name");
-        }
-
-        try {
-            venmo_uri += "&app_local_id=" + URLEncoder.encode("abcd", "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            Log.e("venmo_library", "cannot encode app local id");
-        }
-
-        venmo_uri += "&using_new_sdk=true";
+//        venmo_uri += "&using_new_sdk=true";
 
         venmo_uri = venmo_uri.replaceAll("\\+", "%20"); // use %20 encoding instead of +
         Log.d("venmo_library", "venmo_uri = " + venmo_uri);

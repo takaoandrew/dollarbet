@@ -61,10 +61,11 @@ public class AcceptedMessagesAdapter extends RecyclerView.Adapter<AcceptedMessag
                 Log.d(TAG, "timestamp = " + messagePropositions.get(position).timestamp);
                 Log.d(TAG, "senderId = " + messagePropositions.get(position).otherUserId);
 
-                Proposition acceptedsProposition = new Proposition(timestamp, senderId, message);
+                Proposition acceptedsProposition = new Proposition(timestamp, MainActivity.userId, message);
+                Proposition acceptersProposition = new Proposition(timestamp, senderId, message);
 
                 // Set winner to won, loser to lost
-                MainActivity.wonMessagesRef.child(timestamp).setValue(acceptedsProposition);
+                MainActivity.wonMessagesRef.child(timestamp).setValue(acceptersProposition);
                 lostMessagesRef = MainActivity.database.getReference("users/" + senderId + "/lostMessages");
                 lostMessagesRef.child(timestamp).setValue(acceptedsProposition);
 
@@ -80,6 +81,7 @@ public class AcceptedMessagesAdapter extends RecyclerView.Adapter<AcceptedMessag
         holder.denyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //TODO make sure this button works like the accept button i just fixed
                 Log.d(TAG, "You denied " + position);
 
                 String timestamp = messagePropositions.get(position).timestamp;

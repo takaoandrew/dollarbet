@@ -52,7 +52,13 @@ public class WonPropositionsAdapter extends RecyclerView.Adapter<WonPropositions
                 String otherUserId = wonMessages.get(position).otherUserId;
                 String otherUser = MainActivity.nameFromIDs.get(otherUserId);
                 String message = wonMessages.get(position).message;
-                Intent venmoIntent = VenmoLibrary.openVenmoPayment("appid", "appname", "5088265524", "0.01", message, "pay");
+                //TODO save the position here, so upon completion, the bet can be removed
+                UserDetailActivity.otherUserId = otherUserId;
+                UserDetailActivity.timestamp = wonMessages.get(position).timestamp;
+                UserDetailActivity.venmoPosition = position;
+                UserDetailActivity.claimingRequest = true;
+                Intent venmoIntent = VenmoLibrary.openVenmoPayment("appid", "appname", "3237173413", "0.01", message, "pay");
+                venmoIntent.putExtra("TYPE_EXTRA", "WIN");
                 ((Activity) mContext).startActivityForResult(venmoIntent, VENMO_REQUEST_CODE);
             }
         });

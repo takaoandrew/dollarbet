@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.android.firebaseuserandmessageapplication.databinding.ActivityUserDetailBinding;
+import com.google.firebase.database.DatabaseReference;
 
 import java.io.Console;
 
@@ -18,6 +19,10 @@ public class UserDetailActivity extends AppCompatActivity {
     private final String TAG = UserDetailActivity.class.getSimpleName();
     ActivityUserDetailBinding binding;
     public final int VENMO_REQUEST_CODE = 836;
+    public static boolean claimingRequest = false;
+    public static int venmoPosition = -1;
+    public static String otherUserId = "-1";
+    public static String timestamp = "-1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +72,27 @@ public class UserDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         switch(requestCode) {
             case VENMO_REQUEST_CODE: {
                 if(resultCode == RESULT_OK) {
+                    Log.d(TAG, "resultCode == RESULT_OK");
                     String signedrequest = data.getStringExtra("signedrequest");
                     if(signedrequest != null) {
+                        Log.d(TAG, "resultCode == RESULT_OK");
                         VenmoLibrary.VenmoResponse response = (new VenmoLibrary()).validateVenmoPaymentResponse(signedrequest, "secret");
+                        Log.d(TAG, "data = " + data);
+                        if(claimingRequest) {
+                            MainActivity.wonMessagesRef.child(timestamp).removeValue();
+                            DatabaseReference lostMessagesRef = MainActivity.database.getReference("users/" + otherUserId + "/lostMessages");
+                            //remove from current users win and opposing users loss
+                        } else {
+                            //remove from current users loss and opposing users win
+
+                        }
                         if(response.getSuccess().equals("1")) {
+                            Log.d(TAG, "response.getSuccess().equals(1)!!!");
+                            Log.d(TAG, "and data = " + data);
                             //Payment successful.  Use data from response object to display a success message
                             Log.d("VENMO", "VENMO SUCCESSFUL");
                             String note = response.getNote();
@@ -82,10 +101,12 @@ public class UserDetailActivity extends AppCompatActivity {
                     }
                     else {
                         String error_message = data.getStringExtra("error_message");
+                        Log.d(TAG, error_message);
                         //An error ocurred.  Make sure to display the error_message to the user
                     }
                 }
                 else if(resultCode == RESULT_CANCELED) {
+                    Log.d(TAG, "resultCode == RESULT_CANCELLED");
                     //The user cancelled the payment
                 }
                 break;
