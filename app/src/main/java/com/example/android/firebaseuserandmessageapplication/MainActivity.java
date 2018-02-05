@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -98,7 +99,10 @@ public class MainActivity extends AppCompatActivity {
     private RequestsAdapter requestsAdapter;
     private IncomingMessagesAdapter incomingMessagesAdapter;
     private AcceptedMessagesAdapter acceptedMessagesAdapter;
+    private Menu menu;
     ActivityMainBinding binding;
+
+    String state;
 
     int testValue;
 
@@ -109,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         Log.d(TAG, "OnCreate");
+        state = "normalState";
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
@@ -754,12 +759,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        this.menu = menu;
         return true;
     }
 
     public void addUserSpecificListeners() {
         Log.d(TAG, "addUserSpecificListeners");
         userId = user.getUid();
+        binding.currentUsername.setText(userFromIDs.get(userId));
 //        username = currentUserName();
         getFriends();
         getAcceptedMessages();
@@ -856,13 +863,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateRequestsAdapter() {
+        MenuItem requestsItem = menu.findItem(R.id.action_requests);
+        Resources resources = context.getResources();
+        if (currentIncomingRequests.size()>5) {
+            requestsItem.setIcon(R.drawable.ic_person_black_24dp99);
+        } else if (currentIncomingRequests.size()>0) {
+            int resourceId = resources.getIdentifier("ic_person_black_24dp"+
+                    currentIncomingRequests.size(), "drawable", context.getPackageName());
+            requestsItem.setIcon(resources.getDrawable(resourceId));
+        } else {
+            requestsItem.setIcon(R.drawable.ic_person_black_24dp);
+        }
         if (requestsAdapter != null) {
             requestsAdapter.updateAdapter();
         } else {
             requestsAdapter = new RequestsAdapter(this, currentIncomingRequests);
             binding.rvRequests.setAdapter(requestsAdapter);
         }
-        showEmptinessMessage(requestsAdapter.getItemCount(), binding.noFriendRequests);
+        if (state.equals("friendsState")) {
+            showEmptinessMessage(requestsAdapter.getItemCount(), binding.noFriendRequests);
+        }
 //        countFriendRequests(requestsAdapter.getItemCount());
     }
 
@@ -913,7 +933,6 @@ public class MainActivity extends AppCompatActivity {
         userFromIDs = new HashMap<String, String>();
         nameFromIDs = new HashMap<String, String>();
         usersRef = database.getReference("users");
-
         usersRef.addChildEventListener(usersRefListener);
     }
 
@@ -1344,6 +1363,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openFriends(View view) {
+        state = "friendsState";
         binding.rvRequests.setVisibility(View.VISIBLE);
         binding.closeFriends.setVisibility(View.VISIBLE);
         binding.friendRequests.setVisibility(View.VISIBLE);
@@ -1366,6 +1386,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void closeFriends(View view) {
+        state = "normalState";
         binding.rvRequests.setVisibility(View.INVISIBLE);
         binding.closeFriends.setVisibility(View.INVISIBLE);
         binding.friendRequests.setVisibility(View.INVISIBLE);

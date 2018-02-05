@@ -77,6 +77,11 @@ public class IncomingMessagesAdapter extends RecyclerView.Adapter<IncomingMessag
         holder.denyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String timestamp = messagePropositions.get(position).timestamp;
+                String senderId = messagePropositions.get(position).otherUserId;
+                MainActivity.incomingMessagesRef.child(timestamp).removeValue();
+                acceptedsOutgoingMessagesRef = MainActivity.database.getReference("users/" + senderId + "/outgoingMessages");
+                acceptedsOutgoingMessagesRef.child(timestamp).removeValue();
                 Log.d(TAG, "You denied " + position);
             }
         });

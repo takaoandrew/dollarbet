@@ -85,21 +85,22 @@ public class AcceptedMessagesAdapter extends RecyclerView.Adapter<AcceptedMessag
                 Log.d(TAG, "You denied " + position);
 
                 String timestamp = messagePropositions.get(position).timestamp;
-                String senderId = messagePropositions.get(position).otherUserId;
+                String otherUserId = messagePropositions.get(position).otherUserId;
                 String message = messagePropositions.get(position).message;
                 Log.d(TAG, "message = " + messagePropositions.get(position).message);
                 Log.d(TAG, "timestamp = " + messagePropositions.get(position).timestamp);
                 Log.d(TAG, "senderId = " + messagePropositions.get(position).otherUserId);
 
-                Proposition acceptedsProposition = new Proposition(timestamp, senderId, message);
+                Proposition acceptedsProposition = new Proposition(timestamp, MainActivity.userId, message);
+                Proposition acceptersProposition = new Proposition(timestamp, otherUserId, message);
 
                 // Set winner to won, loser to lost
-                MainActivity.lostMessagesRef.child(timestamp).setValue(acceptedsProposition);
-                wonMessagesRef = MainActivity.database.getReference("users/" + senderId + "/wonMessages");
+                MainActivity.lostMessagesRef.child(timestamp).setValue(acceptersProposition);
+                wonMessagesRef = MainActivity.database.getReference("users/" + otherUserId + "/wonMessages");
                 wonMessagesRef.child(timestamp).setValue(acceptedsProposition);
 
                 //Remove both accepted propositions
-                acceptedsPropositionsRef = MainActivity.database.getReference("users/" + senderId + "/propositions");
+                acceptedsPropositionsRef = MainActivity.database.getReference("users/" + otherUserId + "/propositions");
                 acceptedsPropositionsRef.child(timestamp).removeValue();
 
                 MainActivity.acceptedMessagesRef.child(timestamp).removeValue();
