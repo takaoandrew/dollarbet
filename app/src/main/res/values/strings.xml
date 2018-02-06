@@ -28,4 +28,5 @@
     <string name="won">Yes</string>
     <string name="lost">no</string>
     <string name="claim">Claim</string>
+    <string name="no_won_propositions">You have no unclaimed wins</string>
 </resources>

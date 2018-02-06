@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,14 +29,12 @@ import com.example.android.firebaseuserandmessageapplication.databinding.Activit
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -51,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String userIdPreferenceKey = "userIDPreferenceKey";
+    private static final String userDisplayNamePreferenceKey = "userDisplayNamePreferenceKey";
+
     public static FirebaseDatabase database;
     public static DatabaseReference usersRef;
     public static DatabaseReference incomingRequestsRef;
@@ -105,33 +106,49 @@ public class MainActivity extends AppCompatActivity {
     String state;
 
     int testValue;
-    String STATE_USER = "state_user";
+    String STATE_USER_ID = "state_user_id";
+    String STATE_USER_DISPLAY_NAME = "state_user_display_name";
 
     boolean previouslyLoggedIn;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString(STATE_USER, userId);
+        Log.d(TAG, "onSaveInstanceState");
+        savedInstanceState.putString(STATE_USER_ID, userId);
+        savedInstanceState.putString(STATE_USER_DISPLAY_NAME, userDisplayName);
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "OnCreate");
         super.onCreate(savedInstanceState);
 
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+
         if (savedInstanceState != null) {
+            Log.d(TAG, "savedInstanceState != null");
+            userId = savedInstanceState.getString(STATE_USER_ID);
+            userDisplayName = savedInstanceState.getString(STATE_USER_DISPLAY_NAME);
+            if (userId == null) {
+                previouslyLoggedIn = false;
+            } else {
+                previouslyLoggedIn = true;
+            }
+        } else if (settings.getString(userIdPreferenceKey, null) != null ) {
+            userId = settings.getString(userIdPreferenceKey, null);
             previouslyLoggedIn = true;
-            // Restore value of members from saved state
-            userId = savedInstanceState.getString(STATE_USER);
+            userDisplayName = settings.getString(userDisplayNamePreferenceKey, null);
         } else {
+            Log.d(TAG, "savedInstanceState == null");
             // Probably initialize members with default values for a new instance
             previouslyLoggedIn = false;
         }
 
+
 //        setContentView(R.layout.activity_main);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        Log.d(TAG, "OnCreate");
         state = "normalState";
 
         Toolbar toolbar = binding.toolbar;
@@ -204,42 +221,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-//
-//        propositionsRefListener = new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                Log.d(TAG, "getAcceptedMessages: onChildAdded-- current propositions was " + currentPropositions.keySet().toString());
-//                currentPropositions.put((String) dataSnapshot.getKey(),
-//                        (String) dataSnapshot.child("fromName").getValue());
-//                Log.d(TAG, "getAcceptedMessages: onChildAdded-- current propositions now " + currentPropositions.keySet().toString());
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//                Log.d(TAG, "getAcceptedMessages: onChildChanged-- current propositions was " + currentPropositions.keySet().toString());
-//                currentPropositions.put((String) dataSnapshot.getKey(),
-//                        (String) dataSnapshot.child("fromName").getValue());
-//                Log.d(TAG, "getAcceptedMessages: onChildChanged-- current propositions now " + currentPropositions.keySet().toString());
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "getAcceptedMessages: onChildRemoved-- current propositions was " + currentPropositions.keySet().toString());
-//                currentPropositions.remove((String) dataSnapshot.getKey());
-//                Log.d(TAG, "getAcceptedMessages: onChildRemoved-- current propositions now " + currentPropositions.keySet().toString());
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        };
-//
         outgoingRequestsRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -281,7 +262,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
         incomingRequestsRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -325,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
         outgoingMessagesRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -367,50 +346,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-//
-//        incomingMessagesRefListener = new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                Log.d(TAG, "getIncomingMessages: onChildAdded-- currentIncomingMessages was "
-//                        + currentIncomingMessages.keySet().toString());
-//                currentIncomingMessages.put((String) dataSnapshot.child("fromId").getValue(),
-//                        (String) dataSnapshot.child("message").getValue());
-//                Log.d(TAG, "getIncomingMessages: onChildAdded-- currentIncomingMessages now "
-//                        + currentIncomingMessages.keySet().toString());
-//                updateMessagesAdapter();
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//                Log.d(TAG, "getIncomingMessages: onChildChanged-- currentIncomingMessages was "
-//                        + currentIncomingMessages.keySet().toString());
-//                currentIncomingMessages.put((String) dataSnapshot.child("fromId").getValue(),
-//                        (String) dataSnapshot.child("message").getValue());
-//                Log.d(TAG, "getIncomingMessages: onChildChanged-- currentIncomingMessages now "
-//                        + currentIncomingMessages.keySet().toString());
-//                updateMessagesAdapter();
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "getIncomingMessages: onChildRemoved-- currentIncomingMessages was "
-//                        + currentIncomingMessages.keySet().toString());
-//                currentIncomingMessages.remove((String) dataSnapshot.child("fromId").getValue());
-//                Log.d(TAG, "getIncomingMessages: onChildRemoved-- currentIncomingMessages now "
-//                        + currentIncomingMessages.keySet().toString());
-//                updateMessagesAdapter();
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        };
         incomingMessagesRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -474,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
         acceptedMessagesRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -538,7 +472,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
         wonMessagesRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -602,7 +535,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-
         lostMessagesRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -720,9 +652,20 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        getUsers();
         determineLoginStatus();
+        getUsers();
+    }
 
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStop");
+        Log.d(TAG, "adding to shared preferences, userid = " + userId);
+        super.onStop();
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(userIdPreferenceKey, userId);
+        editor.putString(userDisplayNamePreferenceKey, userDisplayName);
+        editor.apply();
     }
 
     @Override
@@ -730,7 +673,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onDestroy");
         removeUserSpecificListeners();
         Log.d(TAG, "onDestroy: usersRef.removeEventListener(usersRefListener)");
-        usersRef.removeEventListener(usersRefListener);
+//        usersRef.removeEventListener(usersRefListener);
         super.onDestroy();
     }
 
@@ -783,7 +726,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void addUserSpecificListeners() {
         Log.d(TAG, "addUserSpecificListeners");
-        binding.currentUsername.setText(userFromIDs.get(userId));
+        if (userFromIDs!=null && userFromIDs.get(userId)!=null) {
+            binding.currentUsername.setText(userFromIDs.get(userId));
+        }
 //        username = currentUserName();
         getFriends();
         getAcceptedMessages();
@@ -816,7 +761,6 @@ public class MainActivity extends AppCompatActivity {
             friendsRef.addChildEventListener(friendsRefListener);
         }
     }
-
     public void getAcceptedMessages() {
         Log.d(TAG, "getAcceptedMessages");
         if (userId != null) {
@@ -826,7 +770,6 @@ public class MainActivity extends AppCompatActivity {
             acceptedMessagesRef.addChildEventListener(acceptedMessagesRefListener);
         }
     }
-
     public void getOutgoingRequests() {
         Log.d(TAG, "getOutgoingRequests");
         if (userId != null) {
@@ -834,7 +777,6 @@ public class MainActivity extends AppCompatActivity {
             outgoingRequestsRef.addChildEventListener(outgoingRequestsRefListener);
         }
     }
-
     public void getIncomingRequests() {
         Log.d(TAG, "getIncomingRequests");
         if (userId != null) {
@@ -843,7 +785,6 @@ public class MainActivity extends AppCompatActivity {
             incomingRequestsRef.addChildEventListener(incomingRequestsRefListener);
         }
     }
-
     public void getOutgoingMessages() {
         Log.d(TAG, "getOutgoingMessages");
         if (userId != null) {
@@ -851,7 +792,6 @@ public class MainActivity extends AppCompatActivity {
             outgoingMessagesRef.addChildEventListener(outgoingMessagesRefListener);
         }
     }
-
     public void getIncomingMessages() {
         Log.d(TAG, "getIncomingMessages");
         if (userId != null) {
@@ -860,7 +800,6 @@ public class MainActivity extends AppCompatActivity {
             incomingMessagesRef.addChildEventListener(incomingMessagesRefListener);
         }
     }
-
     public void getWonMessages() {
         Log.d(TAG, "getWonMessages");
         if (userId != null) {
@@ -869,7 +808,6 @@ public class MainActivity extends AppCompatActivity {
             wonMessagesRef.addChildEventListener(wonMessagesRefListener);
         }
     }
-
     public void getLostMessages() {
         Log.d(TAG, "getLostMessages");
         if (userId != null) {
@@ -989,33 +927,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    //Version 1
-//    protected void sendMessage(View view) {
-//        FirebaseMessaging fm = FirebaseMessaging.getInstance();
-//        fm.send(new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
-//                .setMessageId(Integer.toString(incrementAndGet()))
-//                .addData("my_message", "Hello Andrew")
-//                .addData("my_action","SAY_HELLO")
-//                .build());
-//    }
 
-////Version 1
-//    public static void sendNotificationToUser(String sender, String userId, final String message) {
-//        Log.d(TAG, "attempting sendNotificationToUser");
-//        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-//
-//        DatabaseReference notifications = ref.child("notificationRequests");
-////        notifications.setValue("Testing");
-//
-//        Map notification = new HashMap<>();
-//        notification.put("username", userId);
-//        notification.put("message", message);
-//        notification.put("from", sender);
-//
-//        notifications.push().setValue(notification);
-//    }
-
-    //Version 2
     public static void sendNotificationToUser(String sender, String receiver, final String senderName) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
@@ -1057,6 +969,7 @@ public class MainActivity extends AppCompatActivity {
         removeUserSpecificListeners();
 
         resetListsAndMaps();
+        previouslyLoggedIn = false;
 
         updateRequestsAdapter();
         updateMessagesAdapter();
@@ -1066,6 +979,7 @@ public class MainActivity extends AppCompatActivity {
 //        Intent intent = getIntent();
 //        finish();
 //        startActivity(intent);
+
         determineLoginStatus();
     }
 
