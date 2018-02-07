@@ -19,7 +19,7 @@ public class User {
         friends = new ArrayList<>();
     }
 
-    //Adding a username would be difficult- not sure how to check that the username is unique, requires scouring entire database.
+    //Adding a currentUsername would be difficult- not sure how to check that the currentUsername is unique, requires scouring entire database.
     //Perhaps another time
 //    public User(String tempUserId, String tempUserName, String tempFullName) {
 //        userId = tempUserId;

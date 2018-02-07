@@ -20,10 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.firebaseuserandmessageapplication.databinding.ActivityMainBinding;
 import com.firebase.ui.auth.AuthUI;
@@ -36,7 +36,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -46,6 +45,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.datatype.Duration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int userNameMaximumLength = 15;
     private FirebaseUser user;
     private MyBroadcastReceiver receiver;
-    public static String username;
+    public static String currentUsername;
     public static String userId;
     Context context;
     ChildEventListener friendsRefListener;
@@ -701,6 +702,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        //See if this bugs it out
         getUsers();
 
         determineLoginStatus();
@@ -741,6 +743,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onResume: Logged in: Current user: " + user.getDisplayName());
             userId = user.getUid();
             binding.currentUser.setText(user.getDisplayName());
+            if (currentUsername != null) {
+                binding.currentUsername.setText(currentUsername);
+            }
             updateLostBetCount();
             updateWonBetCount();
             FirebaseMessaging.getInstance().subscribeToTopic("user_"+userId);
@@ -751,6 +756,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId()==R.id.action_requests) {
             openFriends(null);
+            return true;
+        } else if (item.getItemId()==R.id.action_sign_out) {
+            signOut(null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -767,7 +775,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "addUserSpecificListeners");
         userId = user.getUid();
         binding.currentUsername.setText(userFromIDs.get(userId));
-//        username = currentUserName();
+//        currentUsername = currentUserName();
         getFriends();
         getAcceptedMessages();
         getIncomingRequests();
@@ -793,7 +801,7 @@ public class MainActivity extends AppCompatActivity {
     public void getFriends() {
         Log.d(TAG, "getFriends");
         if (userId != null) {
-//            Log.d(TAG, "getFriends: username = " + username);
+//            Log.d(TAG, "getFriends: currentUsername = " + currentUsername);
             Log.d(TAG, "getFriends: userId = " + userId);
             friendsRef = database.getReference("users/" + userId + "/friends");
             friendsRef.addChildEventListener(friendsRefListener);
@@ -803,7 +811,7 @@ public class MainActivity extends AppCompatActivity {
     public void getAcceptedMessages() {
         Log.d(TAG, "getAcceptedMessages");
         if (userId != null) {
-//            Log.d(TAG, "getAcceptedMessages: username = " + username);
+//            Log.d(TAG, "getAcceptedMessages: currentUsername = " + currentUsername);
             Log.d(TAG, "getAcceptedMessages: userId = " + userId);
             acceptedMessagesRef = database.getReference("users/" + userId + "/propositions");
             acceptedMessagesRef.addChildEventListener(acceptedMessagesRefListener);
@@ -821,7 +829,7 @@ public class MainActivity extends AppCompatActivity {
     public void getIncomingRequests() {
         Log.d(TAG, "getIncomingRequests");
         if (userId != null) {
-            Log.d(TAG, "username != null");
+            Log.d(TAG, "currentUsername != null");
             incomingRequestsRef = database.getReference("users/" + userId + "/incomingRequests");
             incomingRequestsRef.addChildEventListener(incomingRequestsRefListener);
         }
@@ -838,7 +846,7 @@ public class MainActivity extends AppCompatActivity {
     public void getIncomingMessages() {
         Log.d(TAG, "getIncomingMessages");
         if (userId != null) {
-            Log.d(TAG, "username != null");
+            Log.d(TAG, "currentUsername != null");
             incomingMessagesRef = database.getReference("users/" + userId + "/incomingMessages");
             incomingMessagesRef.addChildEventListener(incomingMessagesRefListener);
         }
@@ -847,7 +855,7 @@ public class MainActivity extends AppCompatActivity {
     public void getWonMessages() {
         Log.d(TAG, "getWonMessages");
         if (userId != null) {
-            Log.d(TAG, "username != null");
+            Log.d(TAG, "currentUsername != null");
             wonMessagesRef = database.getReference("users/" + userId + "/wonMessages");
             wonMessagesRef.addChildEventListener(wonMessagesRefListener);
         }
@@ -856,7 +864,7 @@ public class MainActivity extends AppCompatActivity {
     public void getLostMessages() {
         Log.d(TAG, "getLostMessages");
         if (userId != null) {
-            Log.d(TAG, "username != null");
+            Log.d(TAG, "currentUsername != null");
             lostMessagesRef = database.getReference("users/" + userId + "/lostMessages");
             lostMessagesRef.addChildEventListener(lostMessagesRefListener);
         }
@@ -874,6 +882,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             requestsItem.setIcon(R.drawable.ic_person_black_24dp);
         }
+
         if (requestsAdapter != null) {
             requestsAdapter.updateAdapter();
         } else {
@@ -957,7 +966,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //returning user
 //                    receiverRegistration();
-//                    getUsers();
+                    getUsers();
                     addUserSpecificListeners();
                 }
                 // Successfully signed in
@@ -987,7 +996,7 @@ public class MainActivity extends AppCompatActivity {
 ////        notifications.setValue("Testing");
 //
 //        Map notification = new HashMap<>();
-//        notification.put("username", userId);
+//        notification.put("currentUsername", userId);
 //        notification.put("message", message);
 //        notification.put("from", sender);
 //
@@ -1189,6 +1198,7 @@ public class MainActivity extends AppCompatActivity {
 //                        sendNotificationToUser(userFromIDs.get(user.getUid()), userId, "Hello from one user to another!");
                         //Version 2
                         sendNotificationToUser(user.getUid(), recipientUserId, nameFromIDs.get(user.getUid()));
+                        makeToast("Friend request sent to " + recipientUsername);
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -1320,10 +1330,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //Set username in firebase, called after creating new account
+    //Set currentUsername in firebase, called after creating new account
     public void setUserName(String username) {
         Log.d(TAG, "Uid = " + user.getUid());
         usersRef.child(userId).setValue((new User(user.getUid(), user.getDisplayName(), username)));
+        currentUsername = username;
         //A new user was just added
         addUserSpecificListeners();
     }
@@ -1372,7 +1383,6 @@ public class MainActivity extends AppCompatActivity {
         binding.rvAcceptedMessages.setVisibility(View.GONE);
         binding.acceptedMessages.setVisibility(View.GONE);
         binding.incomingMessages.setVisibility(View.GONE);
-        binding.signOut.setVisibility(View.GONE);
         binding.currentUser.setVisibility(View.GONE);
         binding.currentUsername.setVisibility(View.GONE);
         binding.wonBetsCount.setVisibility(View.GONE);
@@ -1398,7 +1408,6 @@ public class MainActivity extends AppCompatActivity {
         binding.currentUsername.setVisibility(View.VISIBLE);
         binding.wonBetsCount.setVisibility(View.VISIBLE);
         binding.lostBetsCount.setVisibility(View.VISIBLE);
-        binding.signOut.setVisibility(View.VISIBLE);
         binding.currentUser.setVisibility(View.VISIBLE);
         showEmptinessMessage(currentIncomingMessagesArrayList.size(), binding.noIncomingMessages);
         showEmptinessMessage(currentAcceptedMessagesArrayList.size(), binding.noAcceptedMessages);
@@ -1406,7 +1415,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void showEmptinessMessage(int count, View view) {
         if (count == 0) {
-            Log.d(TAG, view.getId() + ", count is 0");
             view.setVisibility(View.VISIBLE);
         }
         else {
@@ -1416,7 +1424,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (binding.rvRequests.getVisibility()==View.VISIBLE) {
+        if (binding.addFriendFabHint.getVisibility()==View.VISIBLE) {
+            toggleAddOptions(null);
+        }
+        else if (binding.rvRequests.getVisibility()==View.VISIBLE) {
             closeFriends(null);
         }
         else {
@@ -1428,10 +1439,14 @@ public class MainActivity extends AppCompatActivity {
         if (binding.fabAddProposition.getVisibility()==View.VISIBLE) {
             binding.fabAddFriend.setVisibility(View.GONE);
             binding.fabAddProposition.setVisibility(View.GONE);
+            binding.addFriendFabHint.setVisibility(View.GONE);
+            binding.newPropositionFabHint.setVisibility(View.GONE);
 
         } else {
             binding.fabAddFriend.setVisibility(View.VISIBLE);
             binding.fabAddProposition.setVisibility(View.VISIBLE);
+            binding.addFriendFabHint.setVisibility(View.VISIBLE);
+            binding.newPropositionFabHint.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1447,6 +1462,13 @@ public class MainActivity extends AppCompatActivity {
     public String currentUserName() {
         //This is sometimes null
         return (String) userFromIDs.get(user.getUid());
+    }
+
+    public void makeToast(String text) {
+        Toast toast = new Toast(this);
+        toast.setText(text);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
     }
 
 }

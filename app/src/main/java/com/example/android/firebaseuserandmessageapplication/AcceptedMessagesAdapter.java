@@ -81,7 +81,6 @@ public class AcceptedMessagesAdapter extends RecyclerView.Adapter<AcceptedMessag
         holder.denyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO make sure this button works like the accept button i just fixed
                 Log.d(TAG, "You denied " + position);
 
                 String timestamp = messagePropositions.get(position).timestamp;

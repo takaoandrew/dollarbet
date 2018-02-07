@@ -8,9 +8,10 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:titleTextColor="@android:color/white"
-            android:background="@color/colorPrimary"
-            app:title="Message Tester"/>
+            app:titleTextColor="@android:color/black"
+            android:textSize="24sp"
+            android:background="@color/colorPrimary2"
+            app:title="@string/app_title"/>
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -59,6 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintRight_toRightOf="parent"
+                    android:visibility="gone"
                     android:text="Sign out"
                     android:onClick="signOut"
                     />
@@ -158,53 +160,85 @@
                     android:visibility="invisible"
                     app:layout_constraintTop_toBottomOf="@id/no_friend_requests">
                 </android.support.v7.widget.RecyclerView>
-                <Button
+                <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
                     android:id="@+id/close_friends"
                     app:layout_constraintRight_toRightOf="parent"
                     android:visibility="invisible"
-                    android:text="@string/close"
+                    android:src="@drawable/ic_close_black_24dp"
                     android:onClick="closeFriends"/>
-
 
             </android.support.constraint.ConstraintLayout>
 
         </ScrollView>
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/add_friend_fab_hint"
+                android:text="@string/add_friend_fab_hint"
+                android:layout_gravity="bottom|end"
+                app:layout_constraintBottom_toBottomOf="@id/fab_add_friend"
+                app:layout_constraintTop_toTopOf="@id/fab_add_friend"
+                app:layout_constraintEnd_toStartOf="@id/fab_add_friend"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"/>
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fab_add_friend"
+                app:fabSize="mini"
+                android:src="@drawable/ic_person_add_black_24dp"
+                android:visibility="gone"
+                android:layout_gravity="bottom|end"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="160dp"
+                android:onClick="addFriend"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/new_proposition_fab_hint"
+                android:text="@string/new_proposition_fab_hint"
+                android:layout_gravity="bottom|end"
+                app:layout_constraintBottom_toBottomOf="@id/fab_add_proposition"
+                app:layout_constraintTop_toTopOf="@id/fab_add_proposition"
+                app:layout_constraintEnd_toStartOf="@id/fab_add_proposition"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"/>
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fab_add_proposition"
+                app:fabSize="mini"
+                android:src="@drawable/ic_note_add_black_24dp"
+                android:visibility="gone"
+                android:layout_gravity="bottom|end"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="90dp"
+                android:onClick="addProposition"
+                />
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/fab_add"
+                app:fabSize="normal"
+                android:src="@drawable/ic_add_black_24dp"
+                android:layout_gravity="bottom|end"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_margin="16dp"
+                android:onClick="toggleAddOptions"
+                />
+        </android.support.constraint.ConstraintLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/fab_add_friend"
-            app:fabSize="mini"
-            android:src="@drawable/ic_person_add_black_24dp"
-            android:visibility="gone"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="160dp"
-            android:onClick="addFriend"
-            />
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/fab_add_proposition"
-            app:fabSize="mini"
-            android:src="@drawable/ic_note_add_black_24dp"
-            android:visibility="gone"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="90dp"
-            android:onClick="addProposition"
-            />
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/fab_add"
-            app:fabSize="normal"
-            android:src="@drawable/ic_add_black_24dp"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:onClick="toggleAddOptions"
-            />
     </android.support.design.widget.CoordinatorLayout>
 </layout>
