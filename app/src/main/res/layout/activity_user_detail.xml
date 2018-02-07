@@ -69,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/no_won_propositions"
-                    android:text="You have no won propositions"
+                    android:text="@string/no_won_propositions"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
                     android:textSize="14sp"

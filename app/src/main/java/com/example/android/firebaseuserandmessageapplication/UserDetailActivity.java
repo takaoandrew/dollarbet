@@ -34,6 +34,7 @@ public class UserDetailActivity extends AppCompatActivity {
         binding.wonBetsCount.setText(intent.getStringExtra("won_propositions_extra"));
         binding.lostBetsCount.setText(intent.getStringExtra("lost_propositions_extra"));
         Log.d(TAG, String.valueOf(intent.getIntExtra("test_value", 3)));
+        checkEmptyAdapters();
 
         final LinearLayoutManager wonLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false) {
             @Override

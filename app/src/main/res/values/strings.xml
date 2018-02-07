@@ -17,10 +17,10 @@
     <string name="accept">Accept</string>
     <string name="deny">Deny</string>
     <string name="recipient_already_requested">Request pending</string>
-    <string name="recipient_is_current_user">cannot choose your own username</string>
-    <string name="recipient_requested_sender">this username has added you</string>
-    <string name="recipient_already_friends">you are already friends with</string>
-    <string name="recipient_not_friend">Pick a friend\'s username to start a bet with!</string>
+    <string name="recipient_is_current_user">You can\'t send to yourself</string>
+    <string name="recipient_requested_sender">This user has already added you!</string>
+    <string name="recipient_already_friends">You are already friends with</string>
+    <string name="recipient_not_friend">You are not friends with</string>
     <string name="recipient_valid">Send to</string>
     <string name="message_prompt">What\'s the bet?</string>
     <string name="message_hint">message</string>
@@ -32,4 +32,5 @@
     <string name="add_friend_fab_hint">Add friend</string>
     <string name="new_proposition_fab_hint">Propose bet</string>
     <string name="action_sign_out">Sign Out</string>
+    <string name="no_won_propositions">You have no unclaimed wins</string>
 </resources>
