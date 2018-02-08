@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 currentFriends.put((String) dataSnapshot.getKey(),
                         (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getFriends: onChildAdded-- current friends now " + currentFriends.keySet().toString());
+                updateFriendsCount();
             }
 
             @Override
@@ -205,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 currentFriends.put((String) dataSnapshot.getKey(),
                         (String) dataSnapshot.child("fromName").getValue());
                 Log.d(TAG, "getFriends: onChildChanged-- current friends now " + currentFriends.keySet().toString());
+                updateFriendsCount();
             }
 
             @Override
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "getFriends: onChildRemoved-- current friends was " + currentFriends.keySet().toString());
                 currentFriends.remove((String) dataSnapshot.getKey());
                 Log.d(TAG, "getFriends: onChildRemoved-- current friends now " + currentFriends.keySet().toString());
+                updateFriendsCount();
             }
 
             @Override
@@ -615,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 nameFromIDs.put((String) dataSnapshot.child("userId").getValue(),
                         (String) dataSnapshot.child("fullName").getValue());
                 if (((String) dataSnapshot.child("userId").getValue()).equals(userId)) {
-                    binding.currentUsername.setText((String) dataSnapshot.child("userName").getValue());
+                    binding.currentUsername.setText("@"+(String) dataSnapshot.child("userName").getValue());
                 }
                 Log.d(TAG, "getUsers: onChildAdded-- existingUsers now " + existingUsers.toString());
             }
@@ -656,7 +659,16 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
+        //Temporarily comment out and add userspec
         determineLoginStatus();
+//        userId = "AWApsS0yRET4RSVciwF6NzTSy0M2";
+//        username = "bbb";
+//        userDisplayName = "Bobby Brown";
+//        addUserSpecificListeners();
+        //End temporary changes, toggle comments to undo
+
+
+
         getUsers();
     }
 
@@ -695,6 +707,7 @@ public class MainActivity extends AppCompatActivity {
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setAvailableProviders(providers)
+                            .setTheme(R.style.SignInTheme)
                             .build(),
                     RC_SIGN_IN);
         }
@@ -734,7 +747,7 @@ public class MainActivity extends AppCompatActivity {
     public void addUserSpecificListeners() {
         Log.d(TAG, "addUserSpecificListeners");
         if (userFromIDs!=null && userFromIDs.get(userId)!=null) {
-            binding.currentUsername.setText(userFromIDs.get(userId));
+            binding.currentUsername.setText("@"+userFromIDs.get(userId));
         }
 //        username = currentUserName();
         getFriends();
@@ -877,6 +890,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             binding.wonBetsCount.setText("0");
         }
+        if (currentWonMessagesArrayList.size()+currentLostMessagesArrayList.size()>0) {
+            binding.totalBetsCount.setText(String.valueOf(currentWonMessagesArrayList.size()+currentLostMessagesArrayList.size()));
+        } else {
+            binding.totalBetsCount.setText("0");
+        }
     }
 
     public void updateLostBetCount() {
@@ -884,6 +902,19 @@ public class MainActivity extends AppCompatActivity {
             binding.lostBetsCount.setText(String.valueOf(currentLostMessagesArrayList.size()));
         } else {
             binding.lostBetsCount.setText("0");
+        }
+        if (currentWonMessagesArrayList.size()+currentLostMessagesArrayList.size()>0) {
+            binding.totalBetsCount.setText(String.valueOf(currentWonMessagesArrayList.size()+currentLostMessagesArrayList.size()));
+        } else {
+            binding.totalBetsCount.setText("0");
+        }
+    }
+
+    public void updateFriendsCount() {
+        if (currentFriends.size()>0) {
+            binding.totalFriendCount.setText(String.valueOf(currentFriends.size()));
+        } else {
+            binding.totalFriendCount.setText("0");
         }
     }
 
@@ -1318,6 +1349,14 @@ public class MainActivity extends AppCompatActivity {
         binding.closeFriends.setVisibility(View.VISIBLE);
         binding.friendRequests.setVisibility(View.VISIBLE);
         binding.noFriendRequests.setVisibility(View.VISIBLE);
+        binding.betsLabel.setVisibility(View.GONE);
+        binding.winsLabel.setVisibility(View.GONE);
+        binding.friendsLabel.setVisibility(View.GONE);
+        binding.totalBetsCount.setVisibility(View.GONE);
+        binding.wonBetsCount.setVisibility(View.GONE);
+        binding.totalFriendCount.setVisibility(View.GONE);
+        binding.profileImage.setVisibility(View.GONE);
+
         binding.rvIncomingMessages.setVisibility(View.GONE);
         binding.rvAcceptedMessages.setVisibility(View.GONE);
         binding.acceptedMessages.setVisibility(View.GONE);
@@ -1340,13 +1379,19 @@ public class MainActivity extends AppCompatActivity {
         binding.closeFriends.setVisibility(View.INVISIBLE);
         binding.friendRequests.setVisibility(View.INVISIBLE);
         binding.noFriendRequests.setVisibility(View.INVISIBLE);
+        binding.betsLabel.setVisibility(View.VISIBLE);
+        binding.winsLabel.setVisibility(View.VISIBLE);
+        binding.friendsLabel.setVisibility(View.VISIBLE);
+        binding.totalBetsCount.setVisibility(View.VISIBLE);
+        binding.wonBetsCount.setVisibility(View.VISIBLE);
+        binding.totalFriendCount.setVisibility(View.VISIBLE);
+        binding.profileImage.setVisibility(View.VISIBLE);
         binding.rvIncomingMessages.setVisibility(View.VISIBLE);
         binding.rvAcceptedMessages.setVisibility(View.VISIBLE);
         binding.acceptedMessages.setVisibility(View.VISIBLE);
         binding.incomingMessages.setVisibility(View.VISIBLE);
         binding.currentUsername.setVisibility(View.VISIBLE);
         binding.wonBetsCount.setVisibility(View.VISIBLE);
-        binding.lostBetsCount.setVisibility(View.VISIBLE);
         binding.currentUser.setVisibility(View.VISIBLE);
         showEmptinessMessage(currentIncomingMessagesArrayList.size(), binding.noIncomingMessages);
         showEmptinessMessage(currentAcceptedMessagesArrayList.size(), binding.noAcceptedMessages);

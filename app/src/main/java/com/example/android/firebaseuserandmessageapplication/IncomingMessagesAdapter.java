@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
@@ -100,7 +101,7 @@ public class IncomingMessagesAdapter extends RecyclerView.Adapter<IncomingMessag
     class MainViewHolder extends RecyclerView.ViewHolder {
 
         TextView mainText, subText;
-        Button acceptButton, denyButton;
+        ImageButton acceptButton, denyButton;
 
         public MainViewHolder(View itemView) {
             super(itemView);
