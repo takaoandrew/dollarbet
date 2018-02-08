@@ -54,7 +54,7 @@ public class IncomingMessagesAdapter extends RecyclerView.Adapter<IncomingMessag
 //                MainActivity.re
                 //Remove child from incoming messages
                 Log.d(TAG, "You accepted " + position);
-//                String acceptedProposition = (String) messagePropositions.get(position);
+//                String acceptedProposition = (String) filteredUsers.get(position);
                 String timestamp = messagePropositions.get(position).timestamp;
                 String senderId = messagePropositions.get(position).otherUserId;
                 String message = messagePropositions.get(position).message;

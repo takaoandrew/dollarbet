@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +30,9 @@ import android.widget.Toast;
 import com.example.android.firebaseuserandmessageapplication.databinding.ActivityMainBinding;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.database.FirebaseDatabase;
@@ -113,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
     String STATE_USER_DISPLAY_NAME = "state_user_display_name";
 
     boolean previouslyLoggedIn;
+
+    ArrayList<String> filteredList;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -1149,13 +1155,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendRequest(View view) {
-        Context context = view.getContext();
+        final Context context = view.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View dialogView = layoutInflater.inflate(R.layout.send_to_username_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setView(dialogView);
         final EditText recipient = (EditText) dialogView.findViewById(R.id.et_recipient);
         final TextView recipientPromptTextView = (TextView) dialogView.findViewById(R.id.tv_send_to_username_prompt);
+        final RecyclerView filteredUsersRecyclerView = (RecyclerView) dialogView.findViewById(R.id.rv_add_friends_suggestion);
+        filteredUsersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //TODO change from allUsers in scroll view to valid users
 
         alertDialogBuilder
                 .setCancelable(false)
@@ -1194,6 +1204,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 validRecipient = false;
+                filteredList = Lists.newArrayList(Collections2.filter(
+                        existingUsers, Predicates.containsPattern(charSequence.toString())));
+                if (filteredList.size() > 2) {
+                    filteredList = new ArrayList<String>(filteredList.subList(0,2));
+                }
+                if (charSequence.length()==0) {
+                    Log.d(TAG, "charSequence empty");
+                    filteredList.clear();
+                }
+                filteredUsersRecyclerView.setAdapter(new AddFriendAdapter(context, filteredList));
+
                 if (currentOutgoingRequests.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_already_requested);
                 }

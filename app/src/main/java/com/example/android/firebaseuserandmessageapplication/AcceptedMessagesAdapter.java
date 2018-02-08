@@ -54,7 +54,7 @@ public class AcceptedMessagesAdapter extends RecyclerView.Adapter<AcceptedMessag
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "You claim to have won " + position);
-//                String acceptedProposition = (String) messagePropositions.get(position);
+//                String acceptedProposition = (String) filteredUsers.get(position);
                 String timestamp = messagePropositions.get(position).timestamp;
                 String senderId = messagePropositions.get(position).otherUserId;
                 String message = messagePropositions.get(position).message;
