@@ -50,8 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.datatype.Duration;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public static String username;
     public static String userId;
     public static String userDisplayName;
-    Context context;
+    public static Context context;
     ChildEventListener friendsRefListener;
     ChildEventListener usersRefListener;
     ChildEventListener outgoingRequestsRefListener;
@@ -118,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
     boolean previouslyLoggedIn;
 
-    ArrayList<String> filteredList;
+    ArrayList<String> filteredByTextList;
+    ArrayList<String> filteredByValidityList;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -1154,6 +1153,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static void sendRequestFromAdapter(String recipientUsername) {
+
+    }
+
     public void sendRequest(View view) {
         final Context context = view.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
@@ -1204,16 +1207,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 validRecipient = false;
-                filteredList = Lists.newArrayList(Collections2.filter(
+                filteredByTextList = Lists.newArrayList(Collections2.filter(
                         existingUsers, Predicates.containsPattern(charSequence.toString())));
-                if (filteredList.size() > 2) {
-                    filteredList = new ArrayList<String>(filteredList.subList(0,2));
+                filteredByValidityList = new ArrayList<>();
+
+                if (filteredByTextList.size()>0) {
+                    for (String user : filteredByTextList) {
+                        Log.d(TAG, "user = " + user);
+                        Log.d(TAG, "username = " + userFromIDs.get(userId));
+                        if (currentFriends.containsKey(idFromUsers.get(user)) || user.equals(userFromIDs.get(userId))) {
+                            Log.d(TAG, "current friends.get(user) = " + currentFriends.get(user));
+//                            filteredByTextList.remove(user);
+                        }
+                        else {
+                            filteredByValidityList.add(user);
+                        }
+                    }
+                }
+                if (filteredByValidityList.size() > 2) {
+                    filteredByValidityList = new ArrayList<String>(filteredByValidityList.subList(0,2));
                 }
                 if (charSequence.length()==0) {
                     Log.d(TAG, "charSequence empty");
-                    filteredList.clear();
+                    filteredByValidityList.clear();
                 }
-                filteredUsersRecyclerView.setAdapter(new AddFriendAdapter(context, filteredList));
+                filteredUsersRecyclerView.setAdapter(new AddFriendAdapter(context, filteredByValidityList));
+                filteredUsersRecyclerView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
 
                 if (currentOutgoingRequests.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_already_requested);
@@ -1456,7 +1480,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addFriend(View view) {
-        sendRequest(view);
+        sendRequest(view, null);
         toggleAddOptions(view);
     }
     public void addProposition(View view) {

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -59,6 +60,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.Main
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MainActivity.sendRequestFromAdapter("Will this work?");
                 Log.d(TAG, "You accepted " + position);
             }
         });
