@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> filteredByTextList;
     ArrayList<String> filteredByValidityList;
+    public static EditText recipient;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -1163,7 +1164,7 @@ public class MainActivity extends AppCompatActivity {
         View dialogView = layoutInflater.inflate(R.layout.send_to_username_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setView(dialogView);
-        final EditText recipient = (EditText) dialogView.findViewById(R.id.et_recipient);
+        recipient = (EditText) dialogView.findViewById(R.id.et_recipient);
         final TextView recipientPromptTextView = (TextView) dialogView.findViewById(R.id.tv_send_to_username_prompt);
         final RecyclerView filteredUsersRecyclerView = (RecyclerView) dialogView.findViewById(R.id.rv_add_friends_suggestion);
         filteredUsersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -1480,7 +1481,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addFriend(View view) {
-        sendRequest(view, null);
+        sendRequest(view);
         toggleAddOptions(view);
     }
     public void addProposition(View view) {

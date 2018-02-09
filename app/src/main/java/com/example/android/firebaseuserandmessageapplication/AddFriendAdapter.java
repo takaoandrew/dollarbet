@@ -60,7 +60,7 @@ public class AddFriendAdapter extends RecyclerView.Adapter<AddFriendAdapter.Main
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.sendRequestFromAdapter("Will this work?");
+                MainActivity.recipient.setText(filteredUsers.get(position));
                 Log.d(TAG, "You accepted " + position);
             }
         });
