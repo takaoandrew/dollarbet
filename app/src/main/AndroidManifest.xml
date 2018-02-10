@@ -60,8 +60,8 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-        <activity android:name=".FriendRequestsActivity" />
-        <activity android:name=".UserDetailActivity"></activity>
+        <activity android:name=".UserDetailActivity" />
+        <activity android:name=".FriendsActivity"></activity>
     </application>
 
 </manifest>

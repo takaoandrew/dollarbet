@@ -33,4 +33,5 @@
     <string name="new_proposition_fab_hint">Propose bet</string>
     <string name="action_sign_out">Sign Out</string>
     <string name="no_won_propositions">You have no unclaimed wins</string>
+    <string name="no_friends">You don\'t have any friends</string>
 </resources>

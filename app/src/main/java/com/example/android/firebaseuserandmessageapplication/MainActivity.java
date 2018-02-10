@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Proposition> currentWonMessagesArrayList;
     public static ArrayList<Proposition> currentLostMessagesArrayList;
     public static HashMap<String, String> currentOutgoingMessages;
-    public static HashMap<String, String> currentFriends;
+    public static ArrayList<String> currentFriends;
 //    public static HashMap<String, String> currentPropositions;
     private boolean validUsername = false;
     private boolean validRecipient = false;
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 //        user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance();
 
-        currentFriends = new HashMap<>();
+        currentFriends = new ArrayList<>();
         //I believe this is useless
 //        currentPropositions = new HashMap<>();
         currentOutgoingRequests = new HashMap<>();
@@ -196,30 +196,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        binding.totalFriendCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, FriendsActivity.class);
+                startActivity(intent);
+            }
+        });
+
         friendsRefListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "getFriends: onChildAdded-- current friends was " + currentFriends.keySet().toString());
-                currentFriends.put((String) dataSnapshot.getKey(),
-                        (String) dataSnapshot.child("fromName").getValue());
-                Log.d(TAG, "getFriends: onChildAdded-- current friends now " + currentFriends.keySet().toString());
+                Log.d(TAG, "getFriends: onChildAdded-- current friends was " + currentFriends.toString());
+                currentFriends.add((String) dataSnapshot.getKey());
+                Log.d(TAG, "getFriends: onChildAdded-- current friends now " + currentFriends.toString());
                 updateFriendsCount();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "getFriends: onChildChanged-- current friends was " + currentFriends.keySet().toString());
-                currentFriends.put((String) dataSnapshot.getKey(),
-                        (String) dataSnapshot.child("fromName").getValue());
-                Log.d(TAG, "getFriends: onChildChanged-- current friends now " + currentFriends.keySet().toString());
+                Log.d(TAG, "getFriends: onChildChanged-- current friends was " + currentFriends.toString());
+                currentFriends.add((String) dataSnapshot.getKey());
+                Log.d(TAG, "getFriends: onChildChanged-- current friends now " + currentFriends.toString());
                 updateFriendsCount();
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "getFriends: onChildRemoved-- current friends was " + currentFriends.keySet().toString());
+                Log.d(TAG, "getFriends: onChildRemoved-- current friends was " + currentFriends.toString());
                 currentFriends.remove((String) dataSnapshot.getKey());
-                Log.d(TAG, "getFriends: onChildRemoved-- current friends now " + currentFriends.keySet().toString());
+                Log.d(TAG, "getFriends: onChildRemoved-- current friends now " + currentFriends.toString());
                 updateFriendsCount();
             }
 
@@ -1033,7 +1039,7 @@ public class MainActivity extends AppCompatActivity {
         username = null;
         userId = null;
         userDisplayName = null;
-        currentFriends = new HashMap<>();
+        currentFriends = new ArrayList<>();
         currentOutgoingRequests = new HashMap<>();
         currentIncomingRequests = new HashMap<>();
         currentOutgoingMessages = new HashMap<>();
@@ -1102,7 +1108,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 validRecipient = false;
-                if (currentFriends.containsKey(idFromUsers.get(charSequence.toString()))) {
+                if (currentFriends.contains(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_valid);
                     recipientPromptTextView.append(" "+charSequence.toString());
                     validRecipient = true;
@@ -1216,8 +1222,8 @@ public class MainActivity extends AppCompatActivity {
                     for (String user : filteredByTextList) {
                         Log.d(TAG, "user = " + user);
                         Log.d(TAG, "username = " + userFromIDs.get(userId));
-                        if (currentFriends.containsKey(idFromUsers.get(user)) || user.equals(userFromIDs.get(userId))) {
-                            Log.d(TAG, "current friends.get(user) = " + currentFriends.get(user));
+                        if (currentFriends.contains(idFromUsers.get(user)) || user.equals(userFromIDs.get(userId))) {
+                            Log.d(TAG, "current friends.get(user) = " + user);
 //                            filteredByTextList.remove(user);
                         }
                         else {
@@ -1243,7 +1249,7 @@ public class MainActivity extends AppCompatActivity {
                 if (currentOutgoingRequests.containsKey(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_already_requested);
                 }
-                else if (currentFriends.containsKey(idFromUsers.get(charSequence.toString()))) {
+                else if (currentFriends.contains(idFromUsers.get(charSequence.toString()))) {
                     recipientPromptTextView.setText(R.string.recipient_already_friends);
                     recipientPromptTextView.append(" " +charSequence.toString());
                 }
