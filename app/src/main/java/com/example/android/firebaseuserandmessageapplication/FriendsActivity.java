@@ -5,6 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
 import com.example.android.firebaseuserandmessageapplication.databinding.ActivityFriendsBinding;
 
@@ -19,7 +20,11 @@ public class FriendsActivity extends AppCompatActivity {
         FriendsAdapter friendsAdapter = new FriendsAdapter(this, MainActivity.currentFriends);
         binding.rvFriends.setAdapter(friendsAdapter);
         binding.rvFriends.setLayoutManager(new LinearLayoutManager(this));
-
+        if (MainActivity.currentFriends.size()==0) {
+            binding.noFriends.setVisibility(View.VISIBLE);
+        } else {
+            binding.noFriends.setVisibility(View.GONE);
+        }
 
     }
 }

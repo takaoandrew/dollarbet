@@ -501,6 +501,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "currentWonMessagesArrayList: onChildAdded-- currentWonMessagesArrayList length now "
                         + currentWonMessagesArrayList.size());
                 updateWonBetCount();
+                if (UserDetailActivity.wonPropositionsAdapter != null) {
+                    UserDetailActivity.wonPropositionsAdapter.updateAdapter();
+                }
             }
 
             @Override
@@ -515,6 +518,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "currentWonMessagesArrayList: onChildChanged-- currentWonMessagesArrayList length now "
                         + currentWonMessagesArrayList.size());
                 updateWonBetCount();
+                if (UserDetailActivity.wonPropositionsAdapter != null) {
+                    UserDetailActivity.wonPropositionsAdapter.updateAdapter();
+                }
             }
 
             @Override
@@ -541,6 +547,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "currentWonMessagesArrayList: onChildRemoved-- currentWonMessagesArrayList length now "
                         + currentWonMessagesArrayList.size());
                 updateWonBetCount();
+                if (UserDetailActivity.wonPropositionsAdapter != null) {
+                    UserDetailActivity.wonPropositionsAdapter.updateAdapter();
+                }
             }
 
             @Override
@@ -699,7 +708,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
-        removeUserSpecificListeners();
+//        removeUserSpecificListeners();
         Log.d(TAG, "onDestroy: usersRef.removeEventListener(usersRefListener)");
 //        usersRef.removeEventListener(usersRefListener);
         super.onDestroy();
@@ -790,6 +799,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.d(TAG, "getFriends: currentUsername = " + currentUsername);
             Log.d(TAG, "getFriends: userId = " + userId);
             friendsRef = database.getReference("users/" + userId + "/friends");
+            friendsRef.removeEventListener(friendsRefListener);
             friendsRef.addChildEventListener(friendsRefListener);
         }
     }
@@ -799,6 +809,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.d(TAG, "getAcceptedMessages: currentUsername = " + currentUsername);
             Log.d(TAG, "getAcceptedMessages: userId = " + userId);
             acceptedMessagesRef = database.getReference("users/" + userId + "/propositions");
+            acceptedMessagesRef.removeEventListener(acceptedMessagesRefListener);
             acceptedMessagesRef.addChildEventListener(acceptedMessagesRefListener);
         }
     }
@@ -806,6 +817,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "getOutgoingRequests");
         if (userId != null) {
             outgoingRequestsRef = database.getReference("users/" + userId + "/outgoingRequests");
+            outgoingRequestsRef.removeEventListener(outgoingRequestsRefListener);
             outgoingRequestsRef.addChildEventListener(outgoingRequestsRefListener);
         }
     }
@@ -814,6 +826,7 @@ public class MainActivity extends AppCompatActivity {
         if (userId != null) {
             Log.d(TAG, "currentUsername != null");
             incomingRequestsRef = database.getReference("users/" + userId + "/incomingRequests");
+            incomingRequestsRef.removeEventListener(incomingRequestsRefListener);
             incomingRequestsRef.addChildEventListener(incomingRequestsRefListener);
         }
     }
@@ -821,6 +834,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "getOutgoingMessages");
         if (userId != null) {
             outgoingMessagesRef = database.getReference("users/" + userId + "/outgoingMessages");
+            outgoingMessagesRef.removeEventListener(outgoingMessagesRefListener);
             outgoingMessagesRef.addChildEventListener(outgoingMessagesRefListener);
         }
     }
@@ -829,6 +843,7 @@ public class MainActivity extends AppCompatActivity {
         if (userId != null) {
             Log.d(TAG, "currentUsername != null");
             incomingMessagesRef = database.getReference("users/" + userId + "/incomingMessages");
+            incomingMessagesRef.removeEventListener(incomingMessagesRefListener);
             incomingMessagesRef.addChildEventListener(incomingMessagesRefListener);
         }
     }
@@ -837,6 +852,7 @@ public class MainActivity extends AppCompatActivity {
         if (userId != null) {
             Log.d(TAG, "currentUsername != null");
             wonMessagesRef = database.getReference("users/" + userId + "/wonMessages");
+            wonMessagesRef.removeEventListener(wonMessagesRefListener);
             wonMessagesRef.addChildEventListener(wonMessagesRefListener);
         }
     }
@@ -845,6 +861,7 @@ public class MainActivity extends AppCompatActivity {
         if (userId != null) {
             Log.d(TAG, "currentUsername != null");
             lostMessagesRef = database.getReference("users/" + userId + "/lostMessages");
+            lostMessagesRef.removeEventListener(lostMessagesRefListener);
             lostMessagesRef.addChildEventListener(lostMessagesRefListener);
         }
     }
@@ -1017,6 +1034,7 @@ public class MainActivity extends AppCompatActivity {
         //must unsubscribe on sign out
         Log.d(TAG, "signOut");
         FirebaseMessaging.getInstance().unsubscribeFromTopic("user_"+userId);
+        //I believe this is unnecessary now, with removal before addition of listeners
         removeUserSpecificListeners();
 
         resetListsAndMaps();

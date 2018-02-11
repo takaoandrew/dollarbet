@@ -65,8 +65,11 @@ public class WonPropositionsAdapter extends RecyclerView.Adapter<WonPropositions
     }
 
     public void updateAdapter() {
+        Log.d(TAG, "updateAdapter");
+        Log.d(TAG, "updateAdapter, currentWonMessagesArrayList before size = " + MainActivity.currentWonMessagesArrayList.size());
         this.wonMessages = MainActivity.currentWonMessagesArrayList;
         notifyDataSetChanged();
+        Log.d(TAG, "updateAdapter, currentWonMessagesArrayList after size = " + MainActivity.currentWonMessagesArrayList.size());
     }
 
     @Override

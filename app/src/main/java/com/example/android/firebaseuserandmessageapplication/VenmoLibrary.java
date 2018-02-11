@@ -34,21 +34,21 @@ public class VenmoLibrary {
         String venmo_uri = "venmosdk://paycharge?txn=" + txn;
         Log.d("venmo_library", "openVenmoPayment");
 
-        if (!recipients.equals("")) {
+        if (recipients != null) {
             try {
                 venmo_uri += "&recipients=" + URLEncoder.encode(recipients, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 Log.e("venmo_library", "cannot encode recipients");
             }
         }
-        if (!amount.equals("")) {
+        if (amount != null) {
             try {
                 venmo_uri += "&amount=" + URLEncoder.encode(amount, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 Log.e("venmo_library", "cannot encode amount");
             }
         }
-        if (!note.equals("")) {
+        if (note != null) {
             try {
                 venmo_uri += "&note=" + URLEncoder.encode(note, "UTF-8");
             } catch (UnsupportedEncodingException e) {

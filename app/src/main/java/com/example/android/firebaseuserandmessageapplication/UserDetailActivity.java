@@ -23,6 +23,8 @@ public class UserDetailActivity extends AppCompatActivity {
     public static int venmoPosition = -1;
     public static String otherUserId = "-1";
     public static String timestamp = "-1";
+    public static WonPropositionsAdapter wonPropositionsAdapter;
+    public static LostPropositionsAdapter lostPropositionsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +65,8 @@ public class UserDetailActivity extends AppCompatActivity {
             }
         };
 
-        WonPropositionsAdapter wonPropositionsAdapter = new WonPropositionsAdapter(this, MainActivity.currentWonMessagesArrayList);
-        LostPropositionsAdapter lostPropositionsAdapter = new LostPropositionsAdapter(this, MainActivity.currentLostMessagesArrayList);
+        wonPropositionsAdapter = new WonPropositionsAdapter(this, MainActivity.currentWonMessagesArrayList);
+        lostPropositionsAdapter = new LostPropositionsAdapter(this, MainActivity.currentLostMessagesArrayList);
         binding.rvWonPropositions.setLayoutManager(wonLayoutManager);
         binding.rvWonPropositions.setAdapter(wonPropositionsAdapter);
         binding.rvLostPropositions.setLayoutManager(lostLayoutManager);
@@ -84,10 +86,18 @@ public class UserDetailActivity extends AppCompatActivity {
                         VenmoLibrary.VenmoResponse response = (new VenmoLibrary()).validateVenmoPaymentResponse(signedrequest, "secret");
                         Log.d(TAG, "data = " + data);
                         if(claimingRequest) {
+                            Log.d(TAG, "claimingRequest");
                             MainActivity.wonMessagesRef.child(timestamp).removeValue();
                             DatabaseReference lostMessagesRef = MainActivity.database.getReference("users/" + otherUserId + "/lostMessages");
+                            lostMessagesRef.child(timestamp).removeValue();
+                            wonPropositionsAdapter.updateAdapter();
                             //remove from current users win and opposing users loss
                         } else {
+                            Log.d(TAG, "NOT claimingRequest");
+                            MainActivity.lostMessagesRef.child(timestamp).removeValue();
+                            DatabaseReference wonMessagesRef = MainActivity.database.getReference("users/" + otherUserId + "/wonMessages");
+                            wonMessagesRef.child(timestamp).removeValue();
+                            lostPropositionsAdapter.updateAdapter();
                             //remove from current users loss and opposing users win
 
                         }
