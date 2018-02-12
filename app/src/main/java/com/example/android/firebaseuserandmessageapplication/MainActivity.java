@@ -1240,7 +1240,8 @@ public class MainActivity extends AppCompatActivity {
                     for (String user : filteredByTextList) {
                         Log.d(TAG, "user = " + user);
                         Log.d(TAG, "username = " + userFromIDs.get(userId));
-                        if (currentFriends.contains(idFromUsers.get(user)) || user.equals(userFromIDs.get(userId))) {
+                        if (currentFriends.contains(idFromUsers.get(user)) || user.equals(userFromIDs.get(userId))
+                                || currentOutgoingRequests.containsKey(idFromUsers.get(user))) {
                             Log.d(TAG, "current friends.get(user) = " + user);
 //                            filteredByTextList.remove(user);
                         }
@@ -1281,12 +1282,11 @@ public class MainActivity extends AppCompatActivity {
                     recipientPromptTextView.setText(R.string.recipient_prompt);
                     validRecipient = true;
                 }
-                else if (charSequence.length() == 0) {
-                    recipientPromptTextView.setText(R.string.recipient_prompt);
-                }
                 else {
-                    recipientPromptTextView.setText(R.string.recipient_inexistent);
+                    recipientPromptTextView.setVisibility(View.GONE);
+                    return;
                 }
+                recipientPromptTextView.setVisibility(View.VISIBLE);
 
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(validRecipient);
             }

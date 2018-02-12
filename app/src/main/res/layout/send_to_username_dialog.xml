@@ -11,7 +11,6 @@
         android:textColor="@android:color/black"
         android:textAppearance="@android:style/TextAppearance.Medium"
         android:text="@string/recipient_prompt"
-        android:visibility="gone"
         />
     <EditText
         android:id="@+id/et_recipient"
